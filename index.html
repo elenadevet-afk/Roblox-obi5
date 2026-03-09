@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Genially Game Builder v10</title>
+<title>Genially Game Builder v11</title>
 
 <style>
 
@@ -76,7 +76,7 @@ font-size:16px
 
 <div id="panel">
 
-<h2>Game Editor v10</h2>
+<h2>Game Editor v11</h2>
 
 <label>Hero PNG</label>
 <input id="h-url"
@@ -110,8 +110,6 @@ oninput="draw()">
 <input id="fb2en" value="Okay 🙂" oninput="draw()">
 <input id="fb3en" value="Hard 👎" oninput="draw()">
 
-<h3>Questions (RU / EN)</h3>
-
 <div id="q-list"></div>
 
 <button class="btn-copy" onclick="copyIt()">
@@ -130,25 +128,21 @@ COPY GAME CODE
 <script>
 
 let qs=[
-
 {
 ru:{q:"Яблоко?",a:["Яблоко","Груша","Банан"]},
 en:{q:"Apple?",a:["Apple","Pear","Banana"]},
 c:0
 },
-
 {
 ru:{q:"Кот?",a:["Собака","Кот","Лев"]},
 en:{q:"Cat?",a:["Dog","Cat","Lion"]},
 c:1
 },
-
 {
 ru:{q:"Красный?",a:["Синий","Красный","Зеленый"]},
 en:{q:"Red?",a:["Blue","Red","Green"]},
 c:1
 }
-
 ]
 
 function render(){
@@ -162,33 +156,17 @@ const d=document.createElement("div")
 d.className="card"
 
 d.innerHTML=`
-
 <b>RU</b>
-<input value="${q.ru.q}"
-oninput="qs[${i}].ru.q=this.value;draw()">
-
-<input value="${q.ru.a[0]}"
-oninput="qs[${i}].ru.a[0]=this.value;draw()">
-
-<input value="${q.ru.a[1]}"
-oninput="qs[${i}].ru.a[1]=this.value;draw()">
-
-<input value="${q.ru.a[2]}"
-oninput="qs[${i}].ru.a[2]=this.value;draw()">
+<input value="${q.ru.q}" oninput="qs[${i}].ru.q=this.value;draw()">
+<input value="${q.ru.a[0]}" oninput="qs[${i}].ru.a[0]=this.value;draw()">
+<input value="${q.ru.a[1]}" oninput="qs[${i}].ru.a[1]=this.value;draw()">
+<input value="${q.ru.a[2]}" oninput="qs[${i}].ru.a[2]=this.value;draw()">
 
 <b>EN</b>
-<input value="${q.en.q}"
-oninput="qs[${i}].en.q=this.value;draw()">
-
-<input value="${q.en.a[0]}"
-oninput="qs[${i}].en.a[0]=this.value;draw()">
-
-<input value="${q.en.a[1]}"
-oninput="qs[${i}].en.a[1]=this.value;draw()">
-
-<input value="${q.en.a[2]}"
-oninput="qs[${i}].en.a[2]=this.value;draw()">
-
+<input value="${q.en.q}" oninput="qs[${i}].en.q=this.value;draw()">
+<input value="${q.en.a[0]}" oninput="qs[${i}].en.a[0]=this.value;draw()">
+<input value="${q.en.a[1]}" oninput="qs[${i}].en.a[1]=this.value;draw()">
+<input value="${q.en.a[2]}" oninput="qs[${i}].en.a[2]=this.value;draw()">
 `
 
 c.appendChild(d)
@@ -314,26 +292,20 @@ color:white
 </select>
 
 <div id="ui">
-
 <div class="b" id="hp">❤️ ❤️ ❤️</div>
 <div class="b" id="st">STEP</div>
-
 </div>
 
 <div id="q">
-
 <div id="qt"></div>
 <div id="as"></div>
-
 </div>
 
 <div id="end">
-
 <div id="endTitle"></div>
 <div id="score"></div>
 <div id="feedback"></div>
 <button id="again"></button>
-
 </div>
 
 <canvas id="c"></canvas>
@@ -344,14 +316,54 @@ const texts=${JSON.stringify(texts)}
 const tasks=${JSON.stringify(qs)}
 
 let lang="ru"
+document.getElementById("lang").onchange=e=>lang=e.target.value
 
-document.getElementById("lang").onchange=e=>{
-lang=e.target.value
+const img=new Image()
+img.src="${hero}"
+
+const cvs=document.getElementById("c")
+const ctx=cvs.getContext("2d")
+
+function rs(){
+cvs.width=window.innerWidth
+cvs.height=window.innerHeight
 }
+window.onresize=rs
+rs()
 
 let cur=0
 let liv=3
 let score=0
+
+const pls=[]
+
+for(let i=0;i<tasks.length+1;i++){
+pls.push({x:40+(i*80),y:cvs.height-80-(i*30)})
+}
+
+let heroPos={x:pls[0].x,y:pls[0].y}
+
+function drawPlatforms(){
+
+pls.forEach((p,i)=>{
+ctx.fillStyle=i<=cur?"${col}":"#555"
+ctx.fillRect(p.x,p.y,60,10)
+})
+
+}
+
+function drawHero(){
+
+if(img.complete)
+ctx.drawImage(img,heroPos.x,heroPos.y-50,50,60)
+
+}
+
+function moveHero(){
+
+heroPos=pls[cur]
+
+}
 
 function showQuestion(){
 
@@ -375,6 +387,7 @@ if(i===tasks[cur].c){
 
 score++
 cur++
+moveHero()
 
 document.getElementById("q").style.display="none"
 
@@ -433,7 +446,20 @@ again.onclick=()=>location.reload()
 
 }
 
+function loop(){
+
+ctx.clearRect(0,0,cvs.width,cvs.height)
+
+drawPlatforms()
+drawHero()
+
+requestAnimationFrame(loop)
+
+}
+
+moveHero()
 showQuestion()
+loop()
 
 <\/script>
 
