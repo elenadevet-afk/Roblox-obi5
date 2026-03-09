@@ -2,9 +2,10 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Genially Game Builder v8.0</title>
+<title>Genially Game Builder v10</title>
 
 <style>
+
 body{
 font-family:sans-serif;
 margin:0;
@@ -15,7 +16,7 @@ color:white
 }
 
 #panel{
-width:350px;
+width:380px;
 background:#1a1a1a;
 padding:20px;
 overflow-y:auto;
@@ -32,8 +33,8 @@ border-left:4px solid #bc13fe
 
 input{
 width:100%;
-padding:8px;
-margin:5px 0;
+padding:6px;
+margin:3px 0;
 background:#000;
 color:#00f7ff;
 border:1px solid #444;
@@ -67,6 +68,7 @@ cursor:pointer;
 font-weight:bold;
 font-size:16px
 }
+
 </style>
 </head>
 
@@ -74,29 +76,53 @@ font-size:16px
 
 <div id="panel">
 
-<h2>Editor v8.0</h2>
+<h2>Game Editor v10</h2>
 
-<label>Ссылка на героя (PNG)</label>
-<input type="text" id="h-url"
+<label>Hero PNG</label>
+<input id="h-url"
 value="https://cdn-icons-png.flaticon.com/512/616/616430.png"
 oninput="draw()">
 
-<label>Цвет героя</label>
-<input type="color" id="h-col"
-value="#bc13fe"
-oninput="draw()">
+<label>Color</label>
+<input type="color" id="h-col" value="#bc13fe" oninput="draw()">
+
+<h3>End Screen RU</h3>
+
+<input id="endTitleRU" value="🎉 Игра завершена" oninput="draw()">
+<input id="scoreRU" value="Правильных ответов" oninput="draw()">
+<input id="againRU" value="Играть снова" oninput="draw()">
+
+<h4>Feedback RU</h4>
+
+<input id="fb1ru" value="Отлично 👍" oninput="draw()">
+<input id="fb2ru" value="Нормально 🙂" oninput="draw()">
+<input id="fb3ru" value="Сложно 👎" oninput="draw()">
+
+<h3>End Screen EN</h3>
+
+<input id="endTitleEN" value="🎉 Game finished" oninput="draw()">
+<input id="scoreEN" value="Correct answers" oninput="draw()">
+<input id="againEN" value="Play again" oninput="draw()">
+
+<h4>Feedback EN</h4>
+
+<input id="fb1en" value="Great 👍" oninput="draw()">
+<input id="fb2en" value="Okay 🙂" oninput="draw()">
+<input id="fb3en" value="Hard 👎" oninput="draw()">
+
+<h3>Questions (RU / EN)</h3>
 
 <div id="q-list"></div>
 
 <button class="btn-copy" onclick="copyIt()">
-КОПИРОВАТЬ ДЛЯ GENIALLY
+COPY GAME CODE
 </button>
 
 </div>
 
 <div id="view">
 
-<h3>Live Preview</h3>
+<h3>Preview</h3>
 <div id="f-box" class="win"></div>
 
 </div>
@@ -105,22 +131,25 @@ oninput="draw()">
 
 let qs=[
 
-{q:"Apple?",a:["Яблоко","Груша","Банан"],c:0},
-{q:"Cat?",a:["Собака","Кот","Лев"],c:1},
-{q:"Red?",a:["Синий","Красный","Зеленый"],c:1},
-{q:"One+One?",a:["1","2","3"],c:1},
-{q:"Sun?",a:["Луна","Звезда","Солнце"],c:2},
-{q:"Water?",a:["Вода","Огонь","Земля"],c:0},
-{q:"Big?",a:["Малый","Большой","Средний"],c:1},
-{q:"Mother?",a:["Папа","Мама","Брат"],c:1},
-{q:"Green?",a:["Зеленый","Желтый","Серый"],c:0},
-{q:"Friend?",a:["Враг","Друг","Сосед"],c:1},
-{q:"Jump?",a:["Бег","Прыжок","Сон"],c:1},
-{q:"Book?",a:["Книга","Ручка","Лист"],c:0},
-{q:"Dog?",a:["Кот","Собака","Волк"],c:1},
-{q:"Sky?",a:["Земля","Небо","Трава"],c:1}
+{
+ru:{q:"Яблоко?",a:["Яблоко","Груша","Банан"]},
+en:{q:"Apple?",a:["Apple","Pear","Banana"]},
+c:0
+},
 
-];
+{
+ru:{q:"Кот?",a:["Собака","Кот","Лев"]},
+en:{q:"Cat?",a:["Dog","Cat","Lion"]},
+c:1
+},
+
+{
+ru:{q:"Красный?",a:["Синий","Красный","Зеленый"]},
+en:{q:"Red?",a:["Blue","Red","Green"]},
+c:1
+}
+
+]
 
 function render(){
 
@@ -133,25 +162,33 @@ const d=document.createElement("div")
 d.className="card"
 
 d.innerHTML=`
-<input type="text"
-value="${q.q}"
-oninput="qs[${i}].q=this.value;draw()">
 
-<div style="display:flex;gap:2px">
+<b>RU</b>
+<input value="${q.ru.q}"
+oninput="qs[${i}].ru.q=this.value;draw()">
 
-<input type="text"
-value="${q.a[0]}"
-oninput="qs[${i}].a[0]=this.value;draw()">
+<input value="${q.ru.a[0]}"
+oninput="qs[${i}].ru.a[0]=this.value;draw()">
 
-<input type="text"
-value="${q.a[1]}"
-oninput="qs[${i}].a[1]=this.value;draw()">
+<input value="${q.ru.a[1]}"
+oninput="qs[${i}].ru.a[1]=this.value;draw()">
 
-<input type="text"
-value="${q.a[2]}"
-oninput="qs[${i}].a[2]=this.value;draw()">
+<input value="${q.ru.a[2]}"
+oninput="qs[${i}].ru.a[2]=this.value;draw()">
 
-</div>
+<b>EN</b>
+<input value="${q.en.q}"
+oninput="qs[${i}].en.q=this.value;draw()">
+
+<input value="${q.en.a[0]}"
+oninput="qs[${i}].en.a[0]=this.value;draw()">
+
+<input value="${q.en.a[1]}"
+oninput="qs[${i}].en.a[1]=this.value;draw()">
+
+<input value="${q.en.a[2]}"
+oninput="qs[${i}].en.a[2]=this.value;draw()">
+
 `
 
 c.appendChild(d)
@@ -164,39 +201,52 @@ function getCode(){
 
 const hero=document.getElementById("h-url").value
 const col=document.getElementById("h-col").value
-const data=JSON.stringify(qs)
+
+const texts={
+
+ru:{
+title:endTitleRU.value,
+score:scoreRU.value,
+again:againRU.value,
+fb:[fb1ru.value,fb2ru.value,fb3ru.value]
+},
+
+en:{
+title:endTitleEN.value,
+score:scoreEN.value,
+again:againEN.value,
+fb:[fb1en.value,fb2en.value,fb3en.value]
+}
+
+}
 
 return `<iframe srcdoc='
 
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="UTF-8">
 
 <style>
 
-body,html{
-margin:0;
-padding:0;
-overflow:hidden;
-height:100vh;
-width:100vw;
-font-family:sans-serif;
-background:transparent
-}
+body,html{margin:0;padding:0;overflow:hidden;height:100vh;font-family:sans-serif}
 
-canvas{
-display:block
+canvas{display:block}
+
+#lang{
+position:absolute;
+top:10px;
+right:10px;
+z-index:10
 }
 
 #ui{
 position:absolute;
 top:10px;
 left:10px;
-z-index:10;
 display:flex;
-gap:5px
+gap:5px;
+z-index:10
 }
 
 .b{
@@ -258,42 +308,31 @@ color:white
 
 <body>
 
+<select id="lang">
+<option value="ru">RU</option>
+<option value="en">EN</option>
+</select>
+
 <div id="ui">
 
 <div class="b" id="hp">❤️ ❤️ ❤️</div>
-<div class="b" id="st">STEP 1/14</div>
+<div class="b" id="st">STEP</div>
 
 </div>
 
 <div id="q">
 
-<div id="qt"
-style="font-size:18px;margin-bottom:15px"></div>
-
+<div id="qt"></div>
 <div id="as"></div>
 
 </div>
 
 <div id="end">
 
-<div style="font-size:24px;margin-bottom:10px">
-🎉 Игра завершена
-</div>
-
-<div id="score"
-style="margin-bottom:20px;font-size:18px"></div>
-
-<button onclick="location.reload()"
-style="
-background:${col};
-border:none;
-color:white;
-padding:12px 20px;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold">
-Играть снова
-</button>
+<div id="endTitle"></div>
+<div id="score"></div>
+<div id="feedback"></div>
+<button id="again"></button>
 
 </div>
 
@@ -301,150 +340,53 @@ font-weight:bold">
 
 <script>
 
-const img=new Image()
-img.src="${hero}"
+const texts=${JSON.stringify(texts)}
+const tasks=${JSON.stringify(qs)}
 
-const cvs=document.getElementById("c")
-const ctx=cvs.getContext("2d")
+let lang="ru"
 
-const tasks=${data}
+document.getElementById("lang").onchange=e=>{
+lang=e.target.value
+}
 
 let cur=0
 let liv=3
 let score=0
 
-let jT=1
-let sP={x:0,y:0}
-let tP={x:0,y:0}
+function showQuestion(){
 
-function rs(){
-cvs.width=window.innerWidth
-cvs.height=window.innerHeight
-}
-
-window.onresize=rs
-rs()
-
-const pls=[]
-
-for(let i=0;i<15;i++){
-pls.push({
-x:20+(i*55),
-y:cvs.height-60-(i*25)
-})
-}
-
-let hP={x:pls[0].x,y:pls[0].y}
-
-function dP(x,y,a){
-
-ctx.save()
-ctx.translate(x,y)
-
-ctx.fillStyle=a?"${col}":"rgba(80,80,80,0.3)"
-
-ctx.beginPath()
-ctx.moveTo(0,0)
-ctx.lineTo(25,-12)
-ctx.lineTo(50,0)
-ctx.lineTo(25,12)
-ctx.closePath()
-
-ctx.fill()
-ctx.restore()
-
-}
-
-function dH(x,y,t){
-
-const b=Math.sin(t*Math.PI)*40
-
-if(img.complete)
-ctx.drawImage(img,x,y-b-55,50,60)
-
-}
-
-function endGame(){
-
-document.getElementById("score").innerText=
-"Правильных ответов: "+score+" / "+tasks.length
-
-document.getElementById("end").style.display="block"
-
-}
-
-function u(){
-
-ctx.clearRect(0,0,cvs.width,cvs.height)
-
-pls.forEach((p,i)=>dP(p.x,p.y,i<=cur))
-
-if(jT<1){
-
-jT+=0.05
-
-hP.x=sP.x+(tP.x-sP.x)*jT
-hP.y=sP.y+(tP.y-sP.y)*jT
-
-if(jT>=1){
-
-jT=1
-
-if(cur<tasks.length)
-uQ()
-else
-endGame()
-
-}
-
-}
-
-dH(hP.x,hP.y,jT)
-
-requestAnimationFrame(u)
-
-}
-
-function uQ(){
-
-document.getElementById("st").innerText=
-"STEP "+(cur+1)+"/"+tasks.length
+const q=tasks[cur][lang]
 
 document.getElementById("q").style.display="block"
+document.getElementById("qt").innerText=q.q
 
-document.getElementById("qt").innerText=tasks[cur].q
+const a=document.getElementById("as")
+a.innerHTML=""
 
-const b=document.getElementById("as")
-b.innerHTML=""
+q.a.forEach((t,i)=>{
 
-tasks[cur].a.forEach((t,i)=>{
+const b=document.createElement("button")
+b.className="bt"
+b.innerText=t
 
-const btn=document.createElement("button")
-btn.className="bt"
-btn.innerText=t
-
-btn.onclick=()=>{
+b.onclick=()=>{
 
 if(i===tasks[cur].c){
 
 score++
+cur++
 
 document.getElementById("q").style.display="none"
 
-sP={x:hP.x,y:hP.y}
-
-cur++
-
-tP={x:pls[cur].x,y:pls[cur].y}
-
-jT=0
+if(cur<tasks.length)
+showQuestion()
+else
+endGame()
 
 }else{
 
 liv--
-
-document.getElementById("hp").innerText=
-"❤️ ".repeat(liv)
+document.getElementById("hp").innerText="❤️ ".repeat(liv)
 
 if(liv<=0)
 location.reload()
@@ -453,14 +395,45 @@ location.reload()
 
 }
 
-b.appendChild(btn)
+a.appendChild(b)
 
 })
 
 }
 
-uQ()
-u()
+function endGame(){
+
+const t=texts[lang]
+
+document.getElementById("end").style.display="block"
+
+document.getElementById("endTitle").innerText=t.title
+
+document.getElementById("score").innerText=
+t.score+": "+score+" / "+tasks.length
+
+const fb=document.getElementById("feedback")
+fb.innerHTML=""
+
+t.fb.forEach(f=>{
+
+const b=document.createElement("button")
+b.className="bt"
+b.innerText=f
+
+b.onclick=()=>alert("Feedback: "+f)
+
+fb.appendChild(b)
+
+})
+
+const again=document.getElementById("again")
+again.innerText=t.again
+again.onclick=()=>location.reload()
+
+}
+
+showQuestion()
 
 <\/script>
 
@@ -481,13 +454,13 @@ const el=document.createElement("textarea")
 el.value=getCode()
 
 document.body.appendChild(el)
-
 el.select()
+
 document.execCommand("copy")
 
 document.body.removeChild(el)
 
-alert("Код скопирован!")
+alert("Game code copied!")
 
 }
 
