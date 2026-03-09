@@ -2,36 +2,47 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Space Quest v7.5</title>
+    <title>Genially Game Builder v7.4 Final</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #050505; color: white; overflow: hidden; }
-        #panel { width: 380px; background: #111; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; z-index: 100; }
-        .card { background: #1a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #bc13fe; }
-        label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
-        #view { flex-grow: 1; padding: 20px; background: #000; display: flex; flex-direction: column; position: relative; }
-        .win-view { flex-grow: 1; border: 1px solid #444; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
+        #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .card { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #bc13fe; }
+        label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
+        #view { flex-grow: 1; padding: 20px; background: #050505; display: flex; flex-direction: column; }
+        .win-view { flex-grow: 1; border: 2px solid #333; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
         .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
         .btn-copy:hover { background: #9b0fd1; transform: scale(1.02); }
+        hr { border: 0; border-top: 1px solid #333; margin: 15px 0; }
     </style>
 </head>
 <body>
 
 <div id="panel">
-    <h2>Space Editor v7.5 👽</h2>
+    <h2>Editor v7.4 🏆</h2>
+    
     <label>Язык UI:</label>
-    <select id="g-lang" onchange="draw()"><option value="ru">Русский</option><option value="en">English</option></select>
-    <label>Пришелец (GIF URL):</label>
-    <input type="text" id="h-url" value="https://media.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
-    <label>Цвет неона:</label>
+    <select id="g-lang" onchange="draw()">
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+    </select>
+
+    <label>Герой (GIF или PNG URL):</label>
+    <input type="text" id="h-url" value="https://cdn-icons-png.flaticon.com/512/616/616430.png" oninput="draw()">
+    
+    <label>Цвет темы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
-    <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-    <label>Победный текст:</label>
-    <input type="text" id="t-win" value="МИССИЯ ВЫПОЛНЕНА!" oninput="draw()">
-    <label>Текст поражения:</label>
-    <input type="text" id="t-lose" value="СИГНАЛ ПОТЕРЯН" oninput="draw()">
+
+    <hr>
+    <label>Текст при ПОБЕДЕ:</label>
+    <input type="text" id="t-win" value="ВЕЛИКОЛЕПНО!" oninput="draw()">
+    
+    <label>Текст при ПРОИГРЫШЕ:</label>
+    <input type="text" id="t-lose" value="ПОПРОБУЙ ЕЩЕ РАЗ" oninput="draw()">
+    <hr>
+
     <div id="q-list"></div>
-    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
+    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ ДЛЯ GENIALLY</button>
 </div>
 
 <div id="view">
@@ -40,26 +51,31 @@
 
 <script>
     let qs = [
-        {q:"Земля круглая?", a:["Да","Нет","Квадратная"], c:0},
-        {q:"Ближайшая звезда?", a:["Сириус","Солнце","Полярная"], c:1},
-        {q:"Спутник Земли?", a:["Марс","Луна","Венера"], c:1},
-        {q:"Первый космонавт?", a:["Гагарин","Армстронг","Леонов"], c:0},
-        {q:"Цвет Марса?", a:["Синий","Красный","Зеленый"], c:1},
-        {q:"Млечный путь это...", a:["Шоколадка","Галактика","Дорога"], c:1},
-        {q:"Есть жизнь на Марсе?", a:["Да","Нет","Науке неизвестно"], c:2},
-        {q:"Кто лаял в космосе?", a:["Белка и Стрелка","Кот Борис","Слоник"], c:0},
-        {q:"Сатурн знаменит...", a:["Кольцами","Пятном","Жарой"], c:0},
-        {q:"Телескоп нужен для...", a:["Микробов","Звезд","Кино"], c:1},
-        {q:"Солнце это...", a:["Планета","Звезда","Комета"], c:1},
-        {q:"В космосе...", a:["Шумно","Тихо","Весело"], c:1}
+        {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
+        {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
+        {q:"Red?", a:["Синий","Красный","Зеленый"], c:1},
+        {q:"One+One?", a:["1","2","3"], c:1},
+        {q:"Sun?", a:["Луна","Звезда","Солнце"], c:2},
+        {q:"Water?", a:["Вода","Огонь","Земля"], c:0},
+        {q:"Big?", a:["Малый","Большой","Средний"], c:1},
+        {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
+        {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0},
+        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1},
+        {q:"Jump?", a:["Бег","Прыжок","Сон"], c:1},
+        {q:"Book?", a:["Книга","Ручка","Лист"], c:0}
     ];
 
     function render() {
-        const c = document.getElementById('q-list'); c.innerHTML = '';
+        const c = document.getElementById('q-list');
+        c.innerHTML = '';
         qs.forEach((q, i) => {
             const d = document.createElement('div'); d.className = 'card';
             d.innerHTML = `<strong>${i+1}</strong> <input type="text" value="${q.q}" oninput="qs[${i}].q=this.value;draw()">
-            <div style="display:flex;gap:4px"><input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()"><input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()"><input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()"></div>`;
+            <div style="display:flex;gap:4px">
+                <input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()">
+                <input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()">
+                <input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()">
+            </div>`;
             c.appendChild(d);
         });
     }
@@ -70,50 +86,81 @@
         const lang = document.getElementById('g-lang').value;
         const winT = document.getElementById('t-win').value;
         const loseT = document.getElementById('t-lose').value;
-        const labels = { ru: { step: "ШАГ", retry: "ПОВТОРИТЬ КОНТАКТ" }, en: { step: "STEP", retry: "RECONNECT" } }[lang];
+        const data = JSON.stringify(qs);
+
+        const labels = {
+            ru: { step: "ШАГ", retry: "ИГРАТЬ СНОВА" },
+            en: { step: "STEP", retry: "PLAY AGAIN" }
+        }[lang];
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-        body,html{margin:0;padding:0;overflow:hidden;background:#000;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
-        canvas{display:block; position:absolute; top:0; left:0}
-        #ui{position:absolute;top:15px;left:15px;z-index:30;display:flex;gap:8px}
-        .b{background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:12px;font-weight:bold}
-        #q, #final{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:320px;text-align:center;display:none;z-index:40}
-        .bt{background:rgba(0,0,0,0.4);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
-        .bt:hover{background:${col};color:#000;box-shadow: 0 0 20px ${col}}
-        h2{margin:0 0 15px 0; color:${col}; font-size:26px; text-shadow: 0 0 15px ${col}}
-        #qt{font-size:20px; margin-bottom:20px; text-shadow: 2px 2px 5px #000}
+        body,html{margin:0;padding:0;overflow:hidden;background:transparent;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
+        canvas{display:block}
+        #ui{position:absolute;top:15px;left:15px;z-index:10;display:flex;gap:8px}
+        .b{background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold}
+        #q, #final{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:320px;text-align:center;display:none;z-index:20}
+        .bt{background:rgba(0,0,0,0.7);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px;box-shadow: 0 0 15px ${col}33}
+        .bt:hover{background:${col};color:#000;box-shadow: 0 0 25px ${col}aa}
+        h2{margin:0 0 15px 0; color:${col}; font-size:28px; text-shadow: 0 0 20px ${col}}
+        #qt{font-size:22px; margin-bottom:20px; text-shadow: 2px 2px 10px #000}
         </style></head><body>
         <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b" id="st">${labels.step}: 1/12</div></div>
         <div id="q"><div id="qt"></div><div id="as"></div></div>
         <div id="final"><h2 id="f-title"></h2><button class="bt" onclick="location.reload()">${labels.retry}</button></div>
         <canvas id="c"></canvas>
         <script>
-        const img=new Image(); img.src="${hero}";
-        const cvs=document.getElementById("c"), ctx=cvs.getContext("2d"), tasks=${JSON.stringify(qs)};
-        let cur=0, liv=3, jT=1, sP={x:0,y:0}, tP={x:0,y:0}, isWin=false, winAn=0;
-        const stars = Array.from({length: 80}, () => ({x: Math.random()*2000, y: Math.random()*2000, s: Math.random()*2}));
+        const img=new Image();img.src="${hero}";
+        const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
+        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,winAn=0;
         const ctxA = new (window.AudioContext || window.webkitAudioContext)();
-        function playWin() { [523, 659, 783, 1046].forEach((f, i) => { const osc=ctxA.createOscillator(), g=ctxA.createGain(); osc.frequency.value=f; g.gain.setValueAtTime(0.1, ctxA.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime+i*0.1+0.5); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime+i*0.1); osc.stop(ctxA.currentTime+i*0.1+0.5); }); }
-        function rs(){cvs.width=window.innerWidth; cvs.height=window.innerHeight}
-        window.onresize=rs; rs();
-        const pls=[]; for(let i=0;i<13;i++){pls.push({x:40+(i*65), y:cvs.height-80-(i*35)})}
-        let hP={x:pls[0].x, y:pls[0].y};
+        function playWin() { const notes = [523, 659, 783, 1046]; notes.forEach((f, i) => { const osc = ctxA.createOscillator(); const g = ctxA.createGain(); osc.frequency.value = f; g.gain.setValueAtTime(0.1, ctxA.currentTime + i*0.15); g.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime + i*0.15 + 0.6); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime + i*0.15); osc.stop(ctxA.currentTime + i*0.15 + 0.6); }); }
+        function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
+        window.onresize=rs;rs();
+        const pls=[];for(let i=0;i<13;i++){pls.push({x:40+(i*65),y:cvs.height-80-(i*35)})}
+        let hP={x:pls[0].x,y:pls[0].y};
+        function dP(x,y,a){ctx.save();ctx.translate(x,y);ctx.fillStyle=a?"${col}":"rgba(255,255,255,0.1)";ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(28,-14);ctx.lineTo(56,0);ctx.lineTo(28,14);ctx.closePath();ctx.fill();ctx.restore()}
         function u(){
-            ctx.fillStyle="#000"; ctx.fillRect(0,0,cvs.width,cvs.height);
-            ctx.fillStyle="#fff"; stars.forEach(s => { s.x-=0.2; if(s.x<0)s.x=cvs.width; ctx.fillRect(s.x, s.y % cvs.height, s.s, s.s); });
-            pls.forEach((p,i)=>{ ctx.save(); ctx.translate(p.x,p.y); ctx.fillStyle=i<=cur?"${col}":"rgba(255,255,255,0.1)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(28,-14); ctx.lineTo(56,0); ctx.lineTo(28,14); ctx.closePath(); ctx.fill(); ctx.restore(); });
-            let jO = Math.sin(jT*Math.PI)*50; if(isWin) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*35; }
+            ctx.clearRect(0,0,cvs.width,cvs.height);
+            pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
+            let jO = Math.sin(jT*Math.PI)*50;
+            if(isWin) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*35; }
             if(jT<1){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){ jT=1; if(cur<12) uQ(); else showF(true); } }
             if(img.complete) ctx.drawImage(img,hP.x,hP.y-jO-60,55,65);
             requestAnimationFrame(u);
         }
-        function uQ(){ document.getElementById("st").innerText="${labels.step}: "+(cur+1)+"/12"; document.getElementById("q").style.display="block"; document.getElementById("qt").innerText=tasks[cur].q; const b=document.getElementById("as"); b.innerHTML=""; tasks[cur].a.forEach((t,i)=>{ const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; btn.onclick=()=>{ if(i===tasks[cur].c){ document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); } }; b.appendChild(btn); }); }
-        function showF(win){ document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=win?"${winT}":"${loseT}"; if(win){ isWin=true; playWin(); } }
-        uQ(); u();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
+        function uQ(){
+            document.getElementById("st").innerText="${labels.step}: "+(cur+1)+"/12";
+            document.getElementById("q").style.display="block";
+            document.getElementById("qt").innerText=tasks[cur].q;
+            const b=document.getElementById("as"); b.innerHTML="";
+            tasks[cur].a.forEach((t,i)=>{
+                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t;
+                btn.onclick=()=>{
+                    if(i===tasks[cur].c){
+                        document.getElementById("q").style.display="none";
+                        sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0;
+                    } else {
+                        liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv));
+                        if(liv<=0) showF(false);
+                    }
+                }; b.appendChild(btn);
+            });
+        }
+        function showF(win){
+            document.getElementById("q").style.display="none";
+            document.getElementById("final").style.display="block";
+            document.getElementById("f-title").innerText=win?"${winT}":"${loseT}";
+            if(win) { isWin=true; playWin(); }
+        }
+        uQ();u();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
 
     function draw() { document.getElementById('f-box').innerHTML = getCode(); }
-    function copyIt() { const el = document.createElement('textarea'); el.value = getCode(); document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("Космический код скопирован!"); }
+    function copyIt() {
+        const el = document.createElement('textarea'); el.value = getCode();
+        document.body.appendChild(el); el.select(); document.execCommand('copy');
+        document.body.removeChild(el); alert("Код (v7.4) скопирован!");
+    }
     render(); draw();
 </script>
 </body>
