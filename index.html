@@ -2,496 +2,309 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>Genially Game Builder v11</title>
+<title>Platform Quiz Game</title>
 
 <style>
 
 body{
-font-family:sans-serif;
 margin:0;
-display:flex;
-height:100vh;
-background:#111;
-color:white
-}
-
-#panel{
-width:380px;
-background:#1a1a1a;
-padding:20px;
-overflow-y:auto;
-border-right:2px solid #bc13fe
-}
-
-.card{
-background:#252525;
-padding:10px;
-border-radius:8px;
-margin-bottom:10px;
-border-left:4px solid #bc13fe
-}
-
-input{
-width:100%;
-padding:6px;
-margin:3px 0;
-background:#000;
-color:#00f7ff;
-border:1px solid #444;
-border-radius:4px
-}
-
-#view{
-flex-grow:1;
-padding:20px;
-background:#000;
-display:flex;
-flex-direction:column
-}
-
-.win{
-flex-grow:1;
-border:1px solid #333;
-border-radius:10px;
+background:#0f172a;
+font-family:Arial;
 overflow:hidden;
-background:#050505
+color:white;
 }
 
-.btn-copy{
-background:#bc13fe;
-color:white;
-padding:15px;
+#game{
+position:relative;
 width:100%;
+height:100vh;
+perspective:800px;
+}
+
+/* герой */
+
+#hero{
+position:absolute;
+width:30px;
+height:30px;
+background:#38bdf8;
+border-radius:50%;
+bottom:120px;
+left:40px;
+z-index:5;
+transition:all .6s ease;
+}
+
+/* линия */
+
+#line{
+position:absolute;
+bottom:120px;
+left:0;
+right:0;
+height:4px;
+background:#334155;
+}
+
+/* платформы */
+
+.platform{
+
+position:absolute;
+bottom:110px;
+width:60px;
+height:60px;
+
+background:linear-gradient(145deg,#06b6d4,#0891b2);
+
+transform:rotateX(60deg) rotateZ(45deg);
+
+box-shadow:
+0 10px 20px rgba(0,0,0,.5),
+inset 0 2px 6px rgba(255,255,255,.3);
+
+border-radius:6px;
+
+}
+
+/* вопрос */
+
+#question{
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+background:#020617;
+padding:20px;
+border-radius:12px;
+width:320px;
+text-align:center;
+}
+
+button{
+margin-top:10px;
+width:100%;
+padding:10px;
 border:none;
 border-radius:8px;
-cursor:pointer;
+background:#22c55e;
+color:white;
 font-weight:bold;
-font-size:16px
-}
-
-</style>
-</head>
-
-<body>
-
-<div id="panel">
-
-<h2>Game Editor v11</h2>
-
-<label>Hero PNG</label>
-<input id="h-url"
-value="https://cdn-icons-png.flaticon.com/512/616/616430.png"
-oninput="draw()">
-
-<label>Color</label>
-<input type="color" id="h-col" value="#bc13fe" oninput="draw()">
-
-<h3>End Screen RU</h3>
-
-<input id="endTitleRU" value="🎉 Игра завершена" oninput="draw()">
-<input id="scoreRU" value="Правильных ответов" oninput="draw()">
-<input id="againRU" value="Играть снова" oninput="draw()">
-
-<h4>Feedback RU</h4>
-
-<input id="fb1ru" value="Отлично 👍" oninput="draw()">
-<input id="fb2ru" value="Нормально 🙂" oninput="draw()">
-<input id="fb3ru" value="Сложно 👎" oninput="draw()">
-
-<h3>End Screen EN</h3>
-
-<input id="endTitleEN" value="🎉 Game finished" oninput="draw()">
-<input id="scoreEN" value="Correct answers" oninput="draw()">
-<input id="againEN" value="Play again" oninput="draw()">
-
-<h4>Feedback EN</h4>
-
-<input id="fb1en" value="Great 👍" oninput="draw()">
-<input id="fb2en" value="Okay 🙂" oninput="draw()">
-<input id="fb3en" value="Hard 👎" oninput="draw()">
-
-<div id="q-list"></div>
-
-<button class="btn-copy" onclick="copyIt()">
-COPY GAME CODE
-</button>
-
-</div>
-
-<div id="view">
-
-<h3>Preview</h3>
-<div id="f-box" class="win"></div>
-
-</div>
-
-<script>
-
-let qs=[
-{
-ru:{q:"Яблоко?",a:["Яблоко","Груша","Банан"]},
-en:{q:"Apple?",a:["Apple","Pear","Banana"]},
-c:0
-},
-{
-ru:{q:"Кот?",a:["Собака","Кот","Лев"]},
-en:{q:"Cat?",a:["Dog","Cat","Lion"]},
-c:1
-},
-{
-ru:{q:"Красный?",a:["Синий","Красный","Зеленый"]},
-en:{q:"Red?",a:["Blue","Red","Green"]},
-c:1
-}
-]
-
-function render(){
-
-const c=document.getElementById("q-list")
-c.innerHTML=""
-
-qs.forEach((q,i)=>{
-
-const d=document.createElement("div")
-d.className="card"
-
-d.innerHTML=`
-<b>RU</b>
-<input value="${q.ru.q}" oninput="qs[${i}].ru.q=this.value;draw()">
-<input value="${q.ru.a[0]}" oninput="qs[${i}].ru.a[0]=this.value;draw()">
-<input value="${q.ru.a[1]}" oninput="qs[${i}].ru.a[1]=this.value;draw()">
-<input value="${q.ru.a[2]}" oninput="qs[${i}].ru.a[2]=this.value;draw()">
-
-<b>EN</b>
-<input value="${q.en.q}" oninput="qs[${i}].en.q=this.value;draw()">
-<input value="${q.en.a[0]}" oninput="qs[${i}].en.a[0]=this.value;draw()">
-<input value="${q.en.a[1]}" oninput="qs[${i}].en.a[1]=this.value;draw()">
-<input value="${q.en.a[2]}" oninput="qs[${i}].en.a[2]=this.value;draw()">
-`
-
-c.appendChild(d)
-
-})
-
-}
-
-function getCode(){
-
-const hero=document.getElementById("h-url").value
-const col=document.getElementById("h-col").value
-
-const texts={
-
-ru:{
-title:endTitleRU.value,
-score:scoreRU.value,
-again:againRU.value,
-fb:[fb1ru.value,fb2ru.value,fb3ru.value]
-},
-
-en:{
-title:endTitleEN.value,
-score:scoreEN.value,
-again:againEN.value,
-fb:[fb1en.value,fb2en.value,fb3en.value]
-}
-
-}
-
-return `<iframe srcdoc='
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-
-<style>
-
-body,html{margin:0;padding:0;overflow:hidden;height:100vh;font-family:sans-serif}
-
-canvas{display:block}
-
-#lang{
-position:absolute;
-top:10px;
-right:10px;
-z-index:10
-}
-
-#ui{
-position:absolute;
-top:10px;
-left:10px;
-display:flex;
-gap:5px;
-z-index:10
-}
-
-.b{
-background:rgba(0,0,0,0.7);
-color:#fff;
-padding:5px 10px;
-border-radius:10px;
-border:1px solid ${col};
-font-size:12px
-}
-
-#q{
-position:absolute;
-top:30%;
-left:50%;
-transform:translate(-50%,-50%);
-background:rgba(15,15,15,0.95);
-border:2px solid ${col};
-border-radius:20px;
-padding:20px;
-width:260px;
-color:#fff;
-text-align:center;
-display:none;
-z-index:20
-}
-
-.bt{
-background:rgba(255,255,255,0.1);
-border:1px solid ${col};
-color:#fff;
-width:100%;
-padding:10px;
-margin:5px 0;
-border-radius:10px;
 cursor:pointer;
-font-weight:bold
 }
 
-#end{
+/* экран конца */
+
+#endScreen{
+
 position:absolute;
 top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-background:rgba(10,10,10,0.95);
-border:2px solid ${col};
-border-radius:20px;
+background:#020617;
 padding:30px;
-width:300px;
+border-radius:20px;
+width:350px;
 text-align:center;
 display:none;
-z-index:30;
-color:white
+
+}
+
+textarea{
+width:100%;
+height:70px;
+margin-top:10px;
+border-radius:8px;
+border:none;
+padding:8px;
+}
+
+.lang{
+position:absolute;
+top:10px;
+right:10px;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<select id="lang">
-<option value="ru">RU</option>
-<option value="en">EN</option>
-</select>
+<div id="game">
 
-<div id="ui">
-<div class="b" id="hp">❤️ ❤️ ❤️</div>
-<div class="b" id="st">STEP</div>
+<div class="lang">
+<button onclick="setLang('ru')">RU</button>
+<button onclick="setLang('en')">EN</button>
 </div>
 
-<div id="q">
-<div id="qt"></div>
-<div id="as"></div>
+<div id="line"></div>
+
+<div id="hero"></div>
+
+<div id="platforms"></div>
+
+<div id="question"></div>
+
+<div id="endScreen">
+
+<h2 id="endTitle">Игра завершена</h2>
+
+<p id="scoreText"></p>
+
+<label>Текст обратной связи:</label>
+
+<textarea id="feedbackBox">
+Молодец! Ты прошел игру!
+</textarea>
+
+<br><br>
+
+<button onclick="restart()">Играть снова</button>
+
 </div>
 
-<div id="end">
-<div id="endTitle"></div>
-<div id="score"></div>
-<div id="feedback"></div>
-<button id="again"></button>
 </div>
-
-<canvas id="c"></canvas>
 
 <script>
 
-const texts=${JSON.stringify(texts)}
-const tasks=${JSON.stringify(qs)}
-
 let lang="ru"
-document.getElementById("lang").onchange=e=>lang=e.target.value
 
-const img=new Image()
-img.src="${hero}"
-
-const cvs=document.getElementById("c")
-const ctx=cvs.getContext("2d")
-
-function rs(){
-cvs.width=window.innerWidth
-cvs.height=window.innerHeight
+const text={
+ru:{
+end:"Игра завершена",
+again:"Играть снова",
+score:"Правильных ответов"
+},
+en:{
+end:"Game Finished",
+again:"Play Again",
+score:"Correct Answers"
 }
-window.onresize=rs
-rs()
+}
 
-let cur=0
-let liv=3
+function setLang(l){
+
+lang=l
+showQuestion()
+
+}
+
+/* вопросы */
+
+const tasks=[
+
+{q:{ru:"2+2 ?",en:"2+2 ?"},a:["3","4","5"],c:1},
+{q:{ru:"Столица Франции?",en:"Capital of France?"},a:["Paris","Rome","Berlin"],c:0},
+{q:{ru:"5*2 ?",en:"5*2 ?"},a:["7","10","12"],c:1},
+{q:{ru:"Солнце это?",en:"Sun is a?"},a:["Planet","Star","Moon"],c:1},
+{q:{ru:"3+5 ?",en:"3+5 ?"},a:["6","7","8"],c:2},
+{q:{ru:"HTML это?",en:"HTML is?"},a:["Language","Car","Food"],c:0},
+{q:{ru:"CSS отвечает за?",en:"CSS controls?"},a:["Style","Sound","Video"],c:0},
+{q:{ru:"JS используется для?",en:"JS used for?"},a:["Logic","Music","Images"],c:0},
+{q:{ru:"10/2 ?",en:"10/2 ?"},a:["3","5","8"],c:1},
+{q:{ru:"1+9 ?",en:"1+9 ?"},a:["10","11","9"],c:0},
+{q:{ru:"Луна это?",en:"Moon is?"},a:["Star","Satellite","Planet"],c:1},
+{q:{ru:"6+2 ?",en:"6+2 ?"},a:["7","8","9"],c:1},
+{q:{ru:"7+1 ?",en:"7+1 ?"},a:["8","6","9"],c:0},
+{q:{ru:"4+4 ?",en:"4+4 ?"},a:["6","7","8"],c:2}
+
+]
+
+let step=0
 let score=0
 
-const pls=[]
+/* создаем платформы */
 
-for(let i=0;i<tasks.length+1;i++){
-pls.push({x:40+(i*80),y:cvs.height-80-(i*30)})
-}
+const pContainer=document.getElementById("platforms")
 
-let heroPos={x:pls[0].x,y:pls[0].y}
+for(let i=0;i<14;i++){
 
-function drawPlatforms(){
+let p=document.createElement("div")
+p.className="platform"
 
-pls.forEach((p,i)=>{
-ctx.fillStyle=i<=cur?"${col}":"#555"
-ctx.fillRect(p.x,p.y,60,10)
-})
+p.style.left=(100+i*80)+"px"
+
+pContainer.appendChild(p)
 
 }
 
-function drawHero(){
-
-if(img.complete)
-ctx.drawImage(img,heroPos.x,heroPos.y-50,50,60)
-
-}
-
-function moveHero(){
-
-heroPos=pls[cur]
-
-}
+/* вопрос */
 
 function showQuestion(){
 
-const q=tasks[cur][lang]
+if(step>=tasks.length){
 
-document.getElementById("q").style.display="block"
-document.getElementById("qt").innerText=q.q
+endGame()
+return
 
-const a=document.getElementById("as")
-a.innerHTML=""
+}
 
-q.a.forEach((t,i)=>{
+let t=tasks[step]
 
-const b=document.createElement("button")
-b.className="bt"
-b.innerText=t
+let html="<h3>"+t.q[lang]+"</h3>"
 
-b.onclick=()=>{
+t.a.forEach((ans,i)=>{
 
-if(i===tasks[cur].c){
+html+=`<button onclick="answer(${i})">${ans}</button>`
+
+})
+
+document.getElementById("question").innerHTML=html
+
+}
+
+/* ответ */
+
+function answer(i){
+
+if(i===tasks[step].c){
 
 score++
-cur++
+
+step++
+
 moveHero()
 
-document.getElementById("q").style.display="none"
-
-if(cur<tasks.length)
 showQuestion()
-else
-endGame()
 
-}else{
+}
 
-liv--
-document.getElementById("hp").innerText="❤️ ".repeat(liv)
+}
 
-if(liv<=0)
+/* движение героя */
+
+function moveHero(){
+
+const hero=document.getElementById("hero")
+
+hero.style.left=(40+step*80)+"px"
+
+}
+
+/* конец */
+
+function endGame(){
+
+document.getElementById("question").style.display="none"
+
+document.getElementById("endScreen").style.display="block"
+
+document.getElementById("endTitle").innerText=text[lang].end
+
+document.getElementById("scoreText").innerText=
+text[lang].score+": "+score+" / 14"
+
+}
+
+/* рестарт */
+
+function restart(){
+
 location.reload()
 
 }
 
-}
-
-a.appendChild(b)
-
-})
-
-}
-
-function endGame(){
-
-const t=texts[lang]
-
-document.getElementById("end").style.display="block"
-
-document.getElementById("endTitle").innerText=t.title
-
-document.getElementById("score").innerText=
-t.score+": "+score+" / "+tasks.length
-
-const fb=document.getElementById("feedback")
-fb.innerHTML=""
-
-t.fb.forEach(f=>{
-
-const b=document.createElement("button")
-b.className="bt"
-b.innerText=f
-
-b.onclick=()=>alert("Feedback: "+f)
-
-fb.appendChild(b)
-
-})
-
-const again=document.getElementById("again")
-again.innerText=t.again
-again.onclick=()=>location.reload()
-
-}
-
-function loop(){
-
-ctx.clearRect(0,0,cvs.width,cvs.height)
-
-drawPlatforms()
-drawHero()
-
-requestAnimationFrame(loop)
-
-}
-
-moveHero()
 showQuestion()
-loop()
-
-<\/script>
-
-</body>
-</html>
-
-' style="width:100%;height:600px;border:none;"></iframe>`
-
-}
-
-function draw(){
-document.getElementById("f-box").innerHTML=getCode()
-}
-
-function copyIt(){
-
-const el=document.createElement("textarea")
-el.value=getCode()
-
-document.body.appendChild(el)
-el.select()
-
-document.execCommand("copy")
-
-document.body.removeChild(el)
-
-alert("Game code copied!")
-
-}
-
-render()
-draw()
 
 </script>
 
