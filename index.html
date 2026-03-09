@@ -1,312 +1,120 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<title>Platform Quiz Game</title>
-
-<style>
-
-body{
-margin:0;
-background:#0f172a;
-font-family:Arial;
-overflow:hidden;
-color:white;
-}
-
-#game{
-position:relative;
-width:100%;
-height:100vh;
-perspective:800px;
-}
-
-/* герой */
-
-#hero{
-position:absolute;
-width:30px;
-height:30px;
-background:#38bdf8;
-border-radius:50%;
-bottom:120px;
-left:40px;
-z-index:5;
-transition:all .6s ease;
-}
-
-/* линия */
-
-#line{
-position:absolute;
-bottom:120px;
-left:0;
-right:0;
-height:4px;
-background:#334155;
-}
-
-/* платформы */
-
-.platform{
-
-position:absolute;
-bottom:110px;
-width:60px;
-height:60px;
-
-background:linear-gradient(145deg,#06b6d4,#0891b2);
-
-transform:rotateX(60deg) rotateZ(45deg);
-
-box-shadow:
-0 10px 20px rgba(0,0,0,.5),
-inset 0 2px 6px rgba(255,255,255,.3);
-
-border-radius:6px;
-
-}
-
-/* вопрос */
-
-#question{
-position:absolute;
-top:20px;
-left:50%;
-transform:translateX(-50%);
-background:#020617;
-padding:20px;
-border-radius:12px;
-width:320px;
-text-align:center;
-}
-
-button{
-margin-top:10px;
-width:100%;
-padding:10px;
-border:none;
-border-radius:8px;
-background:#22c55e;
-color:white;
-font-weight:bold;
-cursor:pointer;
-}
-
-/* экран конца */
-
-#endScreen{
-
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-background:#020617;
-padding:30px;
-border-radius:20px;
-width:350px;
-text-align:center;
-display:none;
-
-}
-
-textarea{
-width:100%;
-height:70px;
-margin-top:10px;
-border-radius:8px;
-border:none;
-padding:8px;
-}
-
-.lang{
-position:absolute;
-top:10px;
-right:10px;
-}
-
-</style>
+    <meta charset="UTF-8">
+    <title>Genially Space Quest v7.5</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #050505; color: white; overflow: hidden; }
+        #panel { width: 380px; background: #111; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; z-index: 100; }
+        .card { background: #1a1a1a; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #bc13fe; }
+        label { font-size: 11px; color: #888; text-transform: uppercase; font-weight: bold; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
+        #view { flex-grow: 1; padding: 20px; background: #000; display: flex; flex-direction: column; position: relative; }
+        .win-view { flex-grow: 1; border: 1px solid #444; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
+        .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
+        .btn-copy:hover { background: #9b0fd1; transform: scale(1.02); }
+    </style>
 </head>
-
 <body>
 
-<div id="game">
-
-<div class="lang">
-<button onclick="setLang('ru')">RU</button>
-<button onclick="setLang('en')">EN</button>
+<div id="panel">
+    <h2>Space Editor v7.5 👽</h2>
+    <label>Язык UI:</label>
+    <select id="g-lang" onchange="draw()"><option value="ru">Русский</option><option value="en">English</option></select>
+    <label>Пришелец (GIF URL):</label>
+    <input type="text" id="h-url" value="https://media.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
+    <label>Цвет неона:</label>
+    <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
+    <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+    <label>Победный текст:</label>
+    <input type="text" id="t-win" value="МИССИЯ ВЫПОЛНЕНА!" oninput="draw()">
+    <label>Текст поражения:</label>
+    <input type="text" id="t-lose" value="СИГНАЛ ПОТЕРЯН" oninput="draw()">
+    <div id="q-list"></div>
+    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
 </div>
 
-<div id="line"></div>
-
-<div id="hero"></div>
-
-<div id="platforms"></div>
-
-<div id="question"></div>
-
-<div id="endScreen">
-
-<h2 id="endTitle">Игра завершена</h2>
-
-<p id="scoreText"></p>
-
-<label>Текст обратной связи:</label>
-
-<textarea id="feedbackBox">
-Молодец! Ты прошел игру!
-</textarea>
-
-<br><br>
-
-<button onclick="restart()">Играть снова</button>
-
-</div>
-
+<div id="view">
+    <div id="f-box" class="win-view"></div>
 </div>
 
 <script>
+    let qs = [
+        {q:"Земля круглая?", a:["Да","Нет","Квадратная"], c:0},
+        {q:"Ближайшая звезда?", a:["Сириус","Солнце","Полярная"], c:1},
+        {q:"Спутник Земли?", a:["Марс","Луна","Венера"], c:1},
+        {q:"Первый космонавт?", a:["Гагарин","Армстронг","Леонов"], c:0},
+        {q:"Цвет Марса?", a:["Синий","Красный","Зеленый"], c:1},
+        {q:"Млечный путь это...", a:["Шоколадка","Галактика","Дорога"], c:1},
+        {q:"Есть жизнь на Марсе?", a:["Да","Нет","Науке неизвестно"], c:2},
+        {q:"Кто лаял в космосе?", a:["Белка и Стрелка","Кот Борис","Слоник"], c:0},
+        {q:"Сатурн знаменит...", a:["Кольцами","Пятном","Жарой"], c:0},
+        {q:"Телескоп нужен для...", a:["Микробов","Звезд","Кино"], c:1},
+        {q:"Солнце это...", a:["Планета","Звезда","Комета"], c:1},
+        {q:"В космосе...", a:["Шумно","Тихо","Весело"], c:1}
+    ];
 
-let lang="ru"
+    function render() {
+        const c = document.getElementById('q-list'); c.innerHTML = '';
+        qs.forEach((q, i) => {
+            const d = document.createElement('div'); d.className = 'card';
+            d.innerHTML = `<strong>${i+1}</strong> <input type="text" value="${q.q}" oninput="qs[${i}].q=this.value;draw()">
+            <div style="display:flex;gap:4px"><input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()"><input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()"><input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()"></div>`;
+            c.appendChild(d);
+        });
+    }
 
-const text={
-ru:{
-end:"Игра завершена",
-again:"Играть снова",
-score:"Правильных ответов"
-},
-en:{
-end:"Game Finished",
-again:"Play Again",
-score:"Correct Answers"
-}
-}
+    function getCode() {
+        const hero = document.getElementById('h-url').value;
+        const col = document.getElementById('h-col').value;
+        const lang = document.getElementById('g-lang').value;
+        const winT = document.getElementById('t-win').value;
+        const loseT = document.getElementById('t-lose').value;
+        const labels = { ru: { step: "ШАГ", retry: "ПОВТОРИТЬ КОНТАКТ" }, en: { step: "STEP", retry: "RECONNECT" } }[lang];
 
-function setLang(l){
+        return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+        body,html{margin:0;padding:0;overflow:hidden;background:#000;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
+        canvas{display:block; position:absolute; top:0; left:0}
+        #ui{position:absolute;top:15px;left:15px;z-index:30;display:flex;gap:8px}
+        .b{background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:12px;font-weight:bold}
+        #q, #final{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:320px;text-align:center;display:none;z-index:40}
+        .bt{background:rgba(0,0,0,0.4);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
+        .bt:hover{background:${col};color:#000;box-shadow: 0 0 20px ${col}}
+        h2{margin:0 0 15px 0; color:${col}; font-size:26px; text-shadow: 0 0 15px ${col}}
+        #qt{font-size:20px; margin-bottom:20px; text-shadow: 2px 2px 5px #000}
+        </style></head><body>
+        <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b" id="st">${labels.step}: 1/12</div></div>
+        <div id="q"><div id="qt"></div><div id="as"></div></div>
+        <div id="final"><h2 id="f-title"></h2><button class="bt" onclick="location.reload()">${labels.retry}</button></div>
+        <canvas id="c"></canvas>
+        <script>
+        const img=new Image(); img.src="${hero}";
+        const cvs=document.getElementById("c"), ctx=cvs.getContext("2d"), tasks=${JSON.stringify(qs)};
+        let cur=0, liv=3, jT=1, sP={x:0,y:0}, tP={x:0,y:0}, isWin=false, winAn=0;
+        const stars = Array.from({length: 80}, () => ({x: Math.random()*2000, y: Math.random()*2000, s: Math.random()*2}));
+        const ctxA = new (window.AudioContext || window.webkitAudioContext)();
+        function playWin() { [523, 659, 783, 1046].forEach((f, i) => { const osc=ctxA.createOscillator(), g=ctxA.createGain(); osc.frequency.value=f; g.gain.setValueAtTime(0.1, ctxA.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime+i*0.1+0.5); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime+i*0.1); osc.stop(ctxA.currentTime+i*0.1+0.5); }); }
+        function rs(){cvs.width=window.innerWidth; cvs.height=window.innerHeight}
+        window.onresize=rs; rs();
+        const pls=[]; for(let i=0;i<13;i++){pls.push({x:40+(i*65), y:cvs.height-80-(i*35)})}
+        let hP={x:pls[0].x, y:pls[0].y};
+        function u(){
+            ctx.fillStyle="#000"; ctx.fillRect(0,0,cvs.width,cvs.height);
+            ctx.fillStyle="#fff"; stars.forEach(s => { s.x-=0.2; if(s.x<0)s.x=cvs.width; ctx.fillRect(s.x, s.y % cvs.height, s.s, s.s); });
+            pls.forEach((p,i)=>{ ctx.save(); ctx.translate(p.x,p.y); ctx.fillStyle=i<=cur?"${col}":"rgba(255,255,255,0.1)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(28,-14); ctx.lineTo(56,0); ctx.lineTo(28,14); ctx.closePath(); ctx.fill(); ctx.restore(); });
+            let jO = Math.sin(jT*Math.PI)*50; if(isWin) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*35; }
+            if(jT<1){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){ jT=1; if(cur<12) uQ(); else showF(true); } }
+            if(img.complete) ctx.drawImage(img,hP.x,hP.y-jO-60,55,65);
+            requestAnimationFrame(u);
+        }
+        function uQ(){ document.getElementById("st").innerText="${labels.step}: "+(cur+1)+"/12"; document.getElementById("q").style.display="block"; document.getElementById("qt").innerText=tasks[cur].q; const b=document.getElementById("as"); b.innerHTML=""; tasks[cur].a.forEach((t,i)=>{ const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; btn.onclick=()=>{ if(i===tasks[cur].c){ document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); } }; b.appendChild(btn); }); }
+        function showF(win){ document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=win?"${winT}":"${loseT}"; if(win){ isWin=true; playWin(); } }
+        uQ(); u();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
+    }
 
-lang=l
-showQuestion()
-
-}
-
-/* вопросы */
-
-const tasks=[
-
-{q:{ru:"2+2 ?",en:"2+2 ?"},a:["3","4","5"],c:1},
-{q:{ru:"Столица Франции?",en:"Capital of France?"},a:["Paris","Rome","Berlin"],c:0},
-{q:{ru:"5*2 ?",en:"5*2 ?"},a:["7","10","12"],c:1},
-{q:{ru:"Солнце это?",en:"Sun is a?"},a:["Planet","Star","Moon"],c:1},
-{q:{ru:"3+5 ?",en:"3+5 ?"},a:["6","7","8"],c:2},
-{q:{ru:"HTML это?",en:"HTML is?"},a:["Language","Car","Food"],c:0},
-{q:{ru:"CSS отвечает за?",en:"CSS controls?"},a:["Style","Sound","Video"],c:0},
-{q:{ru:"JS используется для?",en:"JS used for?"},a:["Logic","Music","Images"],c:0},
-{q:{ru:"10/2 ?",en:"10/2 ?"},a:["3","5","8"],c:1},
-{q:{ru:"1+9 ?",en:"1+9 ?"},a:["10","11","9"],c:0},
-{q:{ru:"Луна это?",en:"Moon is?"},a:["Star","Satellite","Planet"],c:1},
-{q:{ru:"6+2 ?",en:"6+2 ?"},a:["7","8","9"],c:1},
-{q:{ru:"7+1 ?",en:"7+1 ?"},a:["8","6","9"],c:0},
-{q:{ru:"4+4 ?",en:"4+4 ?"},a:["6","7","8"],c:2}
-
-]
-
-let step=0
-let score=0
-
-/* создаем платформы */
-
-const pContainer=document.getElementById("platforms")
-
-for(let i=0;i<14;i++){
-
-let p=document.createElement("div")
-p.className="platform"
-
-p.style.left=(100+i*80)+"px"
-
-pContainer.appendChild(p)
-
-}
-
-/* вопрос */
-
-function showQuestion(){
-
-if(step>=tasks.length){
-
-endGame()
-return
-
-}
-
-let t=tasks[step]
-
-let html="<h3>"+t.q[lang]+"</h3>"
-
-t.a.forEach((ans,i)=>{
-
-html+=`<button onclick="answer(${i})">${ans}</button>`
-
-})
-
-document.getElementById("question").innerHTML=html
-
-}
-
-/* ответ */
-
-function answer(i){
-
-if(i===tasks[step].c){
-
-score++
-
-step++
-
-moveHero()
-
-showQuestion()
-
-}
-
-}
-
-/* движение героя */
-
-function moveHero(){
-
-const hero=document.getElementById("hero")
-
-hero.style.left=(40+step*80)+"px"
-
-}
-
-/* конец */
-
-function endGame(){
-
-document.getElementById("question").style.display="none"
-
-document.getElementById("endScreen").style.display="block"
-
-document.getElementById("endTitle").innerText=text[lang].end
-
-document.getElementById("scoreText").innerText=
-text[lang].score+": "+score+" / 14"
-
-}
-
-/* рестарт */
-
-function restart(){
-
-location.reload()
-
-}
-
-showQuestion()
-
+    function draw() { document.getElementById('f-box').innerHTML = getCode(); }
+    function copyIt() { const el = document.createElement('textarea'); el.value = getCode(); document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); alert("Космический код скопирован!"); }
+    render(); draw();
 </script>
-
 </body>
 </html>
