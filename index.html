@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v8.8 - Dramatic Fall</title>
+    <title>Genially Builder v8.9 - Text Style</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -18,7 +18,7 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v8.8 📉😵</h2>
+    <h2>Editor v8.9 🎨✍️</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -32,8 +32,11 @@
     <label style="color: #39ff14;">Смещение по X:</label>
     <input type="range" id="h-x-offset" min="-100" max="100" value="0" oninput="draw()">
 
-    <label>Цвет темы:</label>
+    <label>Цвет платформы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
+
+    <label style="color: #ffea00;">Цвет текста задания:</label>
+    <input type="color" id="t-col" value="#ffffff" oninput="draw()">
 
     <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
     <label>Победный текст:</label>
@@ -81,6 +84,7 @@
         const hOffset = parseInt(document.getElementById('h-offset').value);
         const hXOffset = parseInt(document.getElementById('h-x-offset').value);
         const col = document.getElementById('h-col').value;
+        const txtCol = document.getElementById('t-col').value;
         const winT = document.getElementById('t-win').value;
         const data = JSON.stringify(qs);
 
@@ -89,13 +93,18 @@
         canvas{display:block}
         #ui{position:absolute;top:15px;left:15px;z-index:10;display:flex;gap:8px}
         .b{background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold}
+        
         #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:340px;text-align:center;display:none;z-index:20}
+        
         #final{position:absolute; top:75px; left:15px; width:250px; text-align:left; display:none; z-index:30; opacity:0; animation: fadeIn 1s forwards;}
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .bt{background:rgba(0,0,0,0.7);border:1px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
         .bt:hover{background:${col};color:#000}
         h2{margin:0 0 5px 0; color:${col}; font-size:20px; text-shadow: 0 0 15px ${col}; line-height:1.2}
-        #qt{font-size:22px; margin-bottom:20px; text-shadow: 2px 2px 10px #000}
+        
+        /* СТИЛЬ ТЕКСТА ЗАДАНИЯ */
+        #qt{font-size:22px; margin-bottom:20px; color:${txtCol}; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); font-weight:bold;}
         </style></head><body>
         <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b">ШАГ: <span id="stn">1</span>/12</div></div>
         <div id="q"><div id="qt"></div><div id="as"></div></div>
@@ -106,8 +115,7 @@
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
         const hSize = ${hSize}, hOffset = ${hOffset}, hXOffset = ${hXOffset}, pCol = "${col}";
         const pW = 60, pH = 30, pDepth = 15; 
-        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0;
-        let deadAn=0; // Счетчик для анимации смерти
+        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0,deadAn=0;
 
         let audioCtx;
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === "suspended") audioCtx.resume(); }
@@ -155,20 +163,8 @@
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
             let jO = Math.sin(jT*Math.PI)*50;
-            
             if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
-            
-            // НОВАЯ АНИМАЦИЯ СМЕРТИ
-            if(isDead) {
-                deadAn += 0.08;
-                if(deadAn < Math.PI) {
-                    jO = Math.sin(deadAn) * 60; // Подскок
-                } else {
-                    fallY += 10; // Падение
-                    jO = -fallY;
-                }
-            }
-
+            if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
             if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}}
             if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2 + hXOffset, hP.y - hSize - jO + hOffset, hSize, hSize);
             requestAnimationFrame(u);
@@ -185,12 +181,7 @@
                 }; b.appendChild(btn); 
             }); 
         }
-        function showF(win){ 
-            document.getElementById("q").style.display="none"; 
-            document.getElementById("final").style.display="block"; 
-            document.getElementById("f-title").innerText=win?"${winT}":"ПОПРОБУЙ ЕЩЕ РАЗ"; 
-            if(win) isWin=true; else { isDead=true; playFailSound(); } 
-        }
+        function showF(win){ document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=win?"${winT}":"ПОПРОБУЙ ЕЩЕ РАЗ"; if(win) isWin=true; else { isDead=true; playFailSound(); } }
         uQ();u();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
 
@@ -198,7 +189,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v8.8 (Dramatic Fall) скопирован!");
+        document.body.removeChild(el); alert("Код v8.9 с выбором цвета текста скопирован!");
     }
     render(); draw();
 </script>
