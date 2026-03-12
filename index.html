@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.7 - Stable Finish</title>
+    <title>Genially Builder v11.8 - Final Restoration</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -12,74 +12,56 @@
         #view { flex-grow: 1; padding: 20px; background: #050505; display: flex; flex-direction: column; }
         .win-view { flex-grow: 1; border: 2px solid #333; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
         .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
-        .ed-lang-sw { display: flex; gap: 5px; margin-bottom: 20px; background: #000; padding: 5px; border-radius: 8px; border: 1px solid #333; }
-        .ed-sw { flex: 1; text-align: center; padding: 5px; cursor: pointer; font-size: 11px; font-weight: bold; border-radius: 5px; color: #666; }
-        .ed-sw.active { background: #bc13fe; color: white; }
         hr { border:0; border-top:1px solid #333; margin:15px 0; }
     </style>
 </head>
 <body>
 
 <div id="panel">
-    <div class="ed-lang-sw">
-        <div id="sw-ru" class="ed-sw active" onclick="setEditorLang('ru')">РУССКИЙ</div>
-        <div id="sw-en" class="ed-sw" onclick="setEditorLang('en')">ENGLISH</div>
-    </div>
-    <h2 id="ed-title">Editor v11.7 🛠️</h2>
-    <label id="l-hero">Герой (URL/GIF):</label>
+    <h2>Editor v11.8 🚀</h2>
+    
+    <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
-    <label id="l-size">Размер героя:</label>
+    
+    <label style="color: #ff007f;">Размер героя:</label>
     <input type="range" id="h-size" min="30" max="400" value="130" oninput="draw()">
-    <label id="l-offset-y">Смещение по Y:</label>
+
+    <label style="color: #00f7ff;">Смещение по Y:</label>
     <input type="range" id="h-offset-y" min="0" max="150" value="85" oninput="draw()">
-    <label id="l-offset-x">Смещение по X:</label>
-    <input type="range" id="h-offset-x" min="-100" max="100" value="0" oninput="draw()">
-    <label id="l-pcol">Цвет платформы:</label>
+
+    <label>Цвет платформы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
-    <label id="l-tcol">Цвет текста задания:</label>
+
+    <label style="color: #ffea00;">Цвет текста задания:</label>
     <input type="color" id="t-col" value="#ffffff" oninput="draw()">
-    <label id="l-time">Время (сек):</label>
+
+    <label style="color: #39ff14;">Время (сек):</label>
     <input type="number" id="g-time" value="60" oninput="draw()">
+
     <hr>
-    <label id="l-win">Текст победы:</label>
+    <label>Текст победы:</label>
     <input type="text" id="t-win" value="МИССИЯ ВЫПОЛНЕНА!" oninput="draw()">
+    
     <div id="q-list"></div>
-    <button id="btn-copy" class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
+    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
 </div>
 
 <div id="view"><div id="f-box" class="win-view"></div></div>
 
 <script>
-    let currentLang = 'ru';
-    const translations = {
-        ru: { title:"Редактор v11.7", hero:"Герой (URL):", size:"Размер:", offsetY:"Смещение Y:", offsetX:"Смещение X:", pcol:"Цвет:", tcol:"Цвет текста:", time:"Время:", win:"Победа:", btn:"КОПИРОВАТЬ КОД", restart:"ЗАНОВО", score:"МОНЕТ:", timeout:"ВРЕМЯ ВЫШЛО!", alert:"Код скопирован!" },
-        en: { title:"Editor v11.7", hero:"Hero (URL):", size:"Size:", offsetY:"Y Offset:", offsetX:"X Offset:", pcol:"Color:", tcol:"Text Color:", time:"Time:", win:"Victory:", btn:"COPY CODE", restart:"RESTART", score:"COINS:", timeout:"TIME IS UP!", alert:"Code copied!" }
-    };
-
-    function setEditorLang(lang) {
-        currentLang = lang;
-        document.getElementById('sw-ru').classList.toggle('active', lang === 'ru');
-        document.getElementById('sw-en').classList.toggle('active', lang === 'en');
-        const t = translations[lang];
-        document.getElementById('ed-title').innerText = t.title;
-        document.getElementById('l-hero').innerText = t.hero;
-        document.getElementById('l-size').innerText = t.size;
-        document.getElementById('l-offset-y').innerText = t.offsetY;
-        document.getElementById('l-offset-x').innerText = t.offsetX;
-        document.getElementById('l-pcol').innerText = t.pcol;
-        document.getElementById('l-tcol').innerText = t.tcol;
-        document.getElementById('l-time').innerText = t.time;
-        document.getElementById('l-win').innerText = t.win;
-        document.getElementById('btn-copy').innerText = t.btn;
-        draw();
-    }
-
+    // 11 вопросов + старт + финиш = 13 платформ. Герой закончит на 13-й (последней).
     let qs = [
-        {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0}, {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
-        {q:"Red?", a:["Синий","Красный","Зеленый"], c:1}, {q:"One+One?", a:["1","2","3"], c:1},
-        {q:"Sun?", a:["Луна","Звезда","Солнце"], c:2}, {q:"Water?", a:["Вода","Огонь","Земля"], c:0},
-        {q:"Big?", a:["Малый","Большой","Средний"], c:1}, {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
-        {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0}, {q:"Friend?", a:["Враг","Друг","Сосед"], c:1}
+        {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
+        {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
+        {q:"Red?", a:["Синий","Красный","Зеленый"], c:1},
+        {q:"One+One?", a:["1","2","3"], c:1},
+        {q:"Sun?", a:["Луна","Звезда","Солнце"], c:2},
+        {q:"Water?", a:["Вода","Огонь","Земля"], c:0},
+        {q:"Big?", a:["Малый","Большой","Средний"], c:1},
+        {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
+        {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0},
+        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1},
+        {q:"Victory?", a:["Поражение","Победа","Ничья"], c:1}
     ];
 
     function render() {
@@ -98,12 +80,10 @@
         const hero = document.getElementById('h-url').value;
         const hSize = document.getElementById('h-size').value;
         const hOffY = document.getElementById('h-offset-y').value;
-        const hOffX = document.getElementById('h-offset-x').value;
         const col = document.getElementById('h-col').value;
         const tCol = document.getElementById('t-col').value;
         const gameTime = document.getElementById('g-time').value;
         const winT = document.getElementById('t-win').value;
-        const t = translations[currentLang];
         const data = JSON.stringify(qs);
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
@@ -120,35 +100,34 @@
         </style></head><body>
         <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b" style="color:#ffcc00">💰 <span id="coins">0</span></div><div class="b" id="timer" style="color:#39ff14">⏳ ${gameTime}</div></div>
         <div id="q"><div id="qt"></div><div id="as"></div></div>
-        <div id="final"><h2 style="color:${col};" id="f-title"></h2><div id="f-score"></div><button class="bt" onclick="location.reload()">${t.restart}</button></div>
+        <div id="final"><h2 style="color:${col};" id="f-title"></h2><div id="f-score"></div><button class="bt" onclick="location.reload()">ЗАНОВО</button></div>
         <canvas id="c"></canvas>
         <script>
         const img=new Image(); img.src="${hero}";
         const cvs=document.getElementById("c"), ctx=cvs.getContext("2d"), tasks=${data};
-        const hS=${hSize}, hOY=${hOffY}, hOX=${hOffX}, pCol="${col}";
+        const hS=${hSize}, hOY=${hOffY}, pCol="${col}";
         const pW=60, pH=30, pD=15;
-        let cur=0, liv=3, jT=1, sP={x:0,y:0}, tP={x:0,y:0}, isWin=false, isDead=false, winJumpAn=0, jumpCount=0, fallY=0, deadAn=0, coins=0, timeLeft=${gameTime}, timerId;
+        let cur=0, liv=3, jT=1, sP={x:0,y:0}, tP={x:0,y:0}, isWin=false, isDead=false, winAn=0, jumpCount=0, fallY=0, deadAn=0, coins=0, timeLeft=${gameTime}, timerId;
 
-        function playSound(t) {
-            try {
-                const ac = new (window.AudioContext || window.webkitAudioContext)();
-                const o = ac.createOscillator(); const g = ac.createGain();
-                o.type=t==="fail"?"sawtooth":"sine"; o.frequency.setValueAtTime(t==="fail"?100:600, ac.currentTime);
-                g.gain.setValueAtTime(0.1, ac.currentTime); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.2);
-            } catch(e){}
+        // ВЕРНУЛИ ЗВУКИ ИЗ v10.1
+        let audioCtx;
+        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === "suspended") audioCtx.resume(); }
+        function playSound(type) {
+            initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+            if(type==="jump"){ osc.type="square"; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.05, audioCtx.currentTime); }
+            if(type==="coin"){ osc.type="sine"; osc.frequency.setValueAtTime(900, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); }
+            if(type==="fail"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); }
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + (type==="fail"?0.5:0.1));
         }
 
-        function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "${t.timeout}"); },1000); }
+        function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "ВРЕМЯ ВЫШЛО!"); },1000); }
         function shadeColor(c, p) {
             var f=parseInt(c.slice(1),16),t=p<0?0:255,r=f>>16,g=f>>8&0xff,b=f&0xff;
             return "#"+(0x1000000+(Math.round((t-r)*Math.abs(p)+r))*0x10000+(Math.round((t-g)*Math.abs(p)+g))*0x100+(Math.round((t-b)*Math.abs(p)+b))).toString(16).slice(1);
         }
 
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight} rs(); window.onresize=rs;
-        const pls=[];
-        for(let i=0; i<tasks.length+2; i++){
-            pls.push({x:40+(i*65), y:cvs.height-100-(i*35), hasCoin: i > 0});
-        }
+        const pls=[]; for(let i=0; i<tasks.length+2; i++){ pls.push({x:40+(i*65), y:cvs.height-100-(i*35), hC: i>0}); }
         let hP={x:pls[0].x, y:pls[0].y};
 
         function dP(x,y,act,i){
@@ -157,8 +136,9 @@
             ctx.fillStyle=sc; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,pD); ctx.lineTo(pW/2,pH/2+pD); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=fc; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW,pD); ctx.lineTo(pW/2,pH/2+pD); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=tc; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2,-pH/2); ctx.lineTo(pW,0); ctx.lineTo(pW/2,pH/2); ctx.fill();
-            if(pls[i].hasCoin && i > cur){
+            if(pls[i].hC && i > cur){
                 ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -45+Math.sin(Date.now()/200)*5, 8, 0, 7); ctx.fill();
+                ctx.strokeStyle="#fff"; ctx.stroke();
             }
             ctx.restore();
         }
@@ -166,7 +146,6 @@
         function u(){
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur,i));
-            
             let jO = 0;
             if(jT < 1) {
                 jT += 0.04;
@@ -175,22 +154,17 @@
                 jO = Math.sin(jT * Math.PI) * 60;
                 if(jT >= 1) {
                     jT = 1;
-                    if(pls[cur].hasCoin) { coins += 10; document.getElementById("coins").innerText = coins; playSound("coin"); }
-                    if(cur < tasks.length) uQ();
-                    else { isWin = true; winJumpAn = 0; }
+                    if(pls[cur].hC) { coins += 10; document.getElementById("coins").innerText = coins; playSound("coin"); }
+                    if(cur < tasks.length) uQ(); else { isWin = true; }
                 }
             } else if(isWin && jumpCount < 3) {
-                winJumpAn += 0.1;
-                jO = Math.abs(Math.sin(winJumpAn)) * 50;
-                if(winJumpAn >= Math.PI) {
-                    winJumpAn = 0; jumpCount++; playSound("jump");
-                    if(jumpCount >= 3) { document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText="${winT}"; document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>"; }
+                winAn += 0.12; jO = Math.abs(Math.sin(winAn)) * 50;
+                if(winAn >= Math.PI) { winAn = 0; jumpCount++; playSound("jump");
+                    if(jumpCount >= 3) { document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText="${winT}"; document.getElementById("f-score").innerHTML = "<h3>МОНЕТ: "+coins+"</h3>"; }
                 }
             }
-            
             if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
-
-            if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hS/2 + parseInt(hOX), hP.y - hS - jO + parseInt(hOY), hS, hS);
+            if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hS/2, hP.y - hS - jO + parseInt(hOY), hS, hS);
             requestAnimationFrame(u);
         }
 
@@ -201,26 +175,14 @@
             tasks[cur].a.forEach((t,i)=>{ 
                 const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; 
                 btn.onclick=()=>{ 
-                    if(i===tasks[cur].c){ 
-                        playSound("jump"); document.getElementById("q").style.display="none"; 
-                        sP={x:hP.x, y:hP.y}; cur++; tP={x:pls[cur].x, y:pls[cur].y}; jT=0; 
-                    } else { 
-                        liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); 
-                        if(liv<=0) showF(false); 
-                    } 
+                    if(i===tasks[cur].c){ playSound("jump"); document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; 
+                    } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); } 
                 }; b.appendChild(btn); 
             }); 
         }
 
         function showF(win, msg){ 
-            clearInterval(timerId); 
-            if(!win) {
-                isDead=true; document.getElementById("q").style.display="none"; 
-                document.getElementById("final").style.display="block"; 
-                document.getElementById("f-title").innerText=msg || "ИГРА ОКОНЧЕНА";
-                document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>";
-                playSound("fail");
-            }
+            clearInterval(timerId); if(!win) { isDead=true; playSound("fail"); document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=msg || "ИГРА ОКОНЧЕНА"; document.getElementById("f-score").innerHTML = "<h3>МОНЕТ: "+coins+"</h3>"; }
         }
         uQ(); u(); startTimer();
         <\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
@@ -230,7 +192,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert(translations[currentLang].alert);
+        document.body.removeChild(el); alert("Код v11.8 скопирован!");
     }
     render(); draw();
 </script>
