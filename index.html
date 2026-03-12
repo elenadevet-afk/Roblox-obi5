@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.6 - Final Coin & 3 Jumps</title>
+    <title>Genially Builder v11.7 - Stable Finish</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -25,34 +25,24 @@
         <div id="sw-ru" class="ed-sw active" onclick="setEditorLang('ru')">РУССКИЙ</div>
         <div id="sw-en" class="ed-sw" onclick="setEditorLang('en')">ENGLISH</div>
     </div>
-
-    <h2 id="ed-title">Editor v11.6 💎</h2>
-    
+    <h2 id="ed-title">Editor v11.7 🛠️</h2>
     <label id="l-hero">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
-    
     <label id="l-size">Размер героя:</label>
     <input type="range" id="h-size" min="30" max="400" value="130" oninput="draw()">
-
     <label id="l-offset-y">Смещение по Y:</label>
     <input type="range" id="h-offset-y" min="0" max="150" value="85" oninput="draw()">
-
     <label id="l-offset-x">Смещение по X:</label>
     <input type="range" id="h-offset-x" min="-100" max="100" value="0" oninput="draw()">
-
     <label id="l-pcol">Цвет платформы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
-
     <label id="l-tcol">Цвет текста задания:</label>
     <input type="color" id="t-col" value="#ffffff" oninput="draw()">
-
     <label id="l-time">Время (сек):</label>
     <input type="number" id="g-time" value="60" oninput="draw()">
-
     <hr>
     <label id="l-win">Текст победы:</label>
     <input type="text" id="t-win" value="МИССИЯ ВЫПОЛНЕНА!" oninput="draw()">
-    
     <div id="q-list"></div>
     <button id="btn-copy" class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
 </div>
@@ -62,8 +52,8 @@
 <script>
     let currentLang = 'ru';
     const translations = {
-        ru: { title:"Редактор v11.6", hero:"Герой (URL):", size:"Размер:", offsetY:"Смещение Y:", offsetX:"Смещение X:", pcol:"Цвет:", tcol:"Цвет текста:", time:"Время:", win:"Победа:", btn:"КОПИРОВАТЬ КОД", restart:"ЗАНОВО", score:"МОНЕТ:", timeout:"ВРЕМЯ ВЫШЛО!", alert:"Код скопирован!" },
-        en: { title:"Editor v11.6", hero:"Hero (URL):", size:"Size:", offsetY:"Y Offset:", offsetX:"X Offset:", pcol:"Color:", tcol:"Text Color:", time:"Time:", win:"Victory:", btn:"COPY CODE", restart:"RESTART", score:"COINS:", timeout:"TIME IS UP!", alert:"Code copied!" }
+        ru: { title:"Редактор v11.7", hero:"Герой (URL):", size:"Размер:", offsetY:"Смещение Y:", offsetX:"Смещение X:", pcol:"Цвет:", tcol:"Цвет текста:", time:"Время:", win:"Победа:", btn:"КОПИРОВАТЬ КОД", restart:"ЗАНОВО", score:"МОНЕТ:", timeout:"ВРЕМЯ ВЫШЛО!", alert:"Код скопирован!" },
+        en: { title:"Editor v11.7", hero:"Hero (URL):", size:"Size:", offsetY:"Y Offset:", offsetX:"X Offset:", pcol:"Color:", tcol:"Text Color:", time:"Time:", win:"Victory:", btn:"COPY CODE", restart:"RESTART", score:"COINS:", timeout:"TIME IS UP!", alert:"Code copied!" }
     };
 
     function setEditorLang(lang) {
@@ -85,16 +75,11 @@
     }
 
     let qs = [
-        {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
-        {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
-        {q:"Red?", a:["Синий","Красный","Зеленый"], c:1},
-        {q:"One+One?", a:["1","2","3"], c:1},
-        {q:"Sun?", a:["Луна","Звезда","Солнце"], c:2},
-        {q:"Water?", a:["Вода","Огонь","Земля"], c:0},
-        {q:"Big?", a:["Малый","Большой","Средний"], c:1},
-        {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
-        {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0},
-        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1}
+        {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0}, {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
+        {q:"Red?", a:["Синий","Красный","Зеленый"], c:1}, {q:"One+One?", a:["1","2","3"], c:1},
+        {q:"Sun?", a:["Луна","Звезда","Солнце"], c:2}, {q:"Water?", a:["Вода","Огонь","Земля"], c:0},
+        {q:"Big?", a:["Малый","Большой","Средний"], c:1}, {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
+        {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0}, {q:"Friend?", a:["Враг","Друг","Сосед"], c:1}
     ];
 
     function render() {
@@ -138,17 +123,19 @@
         <div id="final"><h2 style="color:${col};" id="f-title"></h2><div id="f-score"></div><button class="bt" onclick="location.reload()">${t.restart}</button></div>
         <canvas id="c"></canvas>
         <script>
-        const img=new Image();img.src="${hero}";
-        const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
+        const img=new Image(); img.src="${hero}";
+        const cvs=document.getElementById("c"), ctx=cvs.getContext("2d"), tasks=${data};
         const hS=${hSize}, hOY=${hOffY}, hOX=${hOffX}, pCol="${col}";
         const pW=60, pH=30, pD=15;
-        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0,deadAn=0,coins=0,timeLeft=${gameTime},timerId;
+        let cur=0, liv=3, jT=1, sP={x:0,y:0}, tP={x:0,y:0}, isWin=false, isDead=false, winJumpAn=0, jumpCount=0, fallY=0, deadAn=0, coins=0, timeLeft=${gameTime}, timerId;
 
-        function playSound(type) {
-            const ac = new (window.AudioContext || window.webkitAudioContext)();
-            const o = ac.createOscillator(); const g = ac.createGain();
-            o.type=type==="fail"?"sawtooth":"sine"; o.frequency.setValueAtTime(type==="fail"?100:600, ac.currentTime);
-            g.gain.setValueAtTime(0.1, ac.currentTime); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.2);
+        function playSound(t) {
+            try {
+                const ac = new (window.AudioContext || window.webkitAudioContext)();
+                const o = ac.createOscillator(); const g = ac.createGain();
+                o.type=t==="fail"?"sawtooth":"sine"; o.frequency.setValueAtTime(t==="fail"?100:600, ac.currentTime);
+                g.gain.setValueAtTime(0.1, ac.currentTime); o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + 0.2);
+            } catch(e){}
         }
 
         function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "${t.timeout}"); },1000); }
@@ -159,11 +146,10 @@
 
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight} rs(); window.onresize=rs;
         const pls=[];
-        for(let i=0;i<tasks.length+2;i++){
-            // Теперь hasCoin (hC) истинно для всех платформ КРОМЕ первой (стартовой)
-            pls.push({x:40+(i*65),y:cvs.height-100-(i*35), hC: i > 0});
+        for(let i=0; i<tasks.length+2; i++){
+            pls.push({x:40+(i*65), y:cvs.height-100-(i*35), hasCoin: i > 0});
         }
-        let hP={x:pls[0].x,y:pls[0].y};
+        let hP={x:pls[0].x, y:pls[0].y};
 
         function dP(x,y,act,i){
             ctx.save(); ctx.translate(x,y);
@@ -171,8 +157,7 @@
             ctx.fillStyle=sc; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,pD); ctx.lineTo(pW/2,pH/2+pD); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=fc; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW,pD); ctx.lineTo(pW/2,pH/2+pD); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=tc; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2,-pH/2); ctx.lineTo(pW,0); ctx.lineTo(pW/2,pH/2); ctx.fill();
-            // Рисуем монету, если она еще не собрана
-            if(pls[i].hC && i > cur){
+            if(pls[i].hasCoin && i > cur){
                 ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -45+Math.sin(Date.now()/200)*5, 8, 0, 7); ctx.fill();
             }
             ctx.restore();
@@ -181,41 +166,29 @@
         function u(){
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur,i));
-            let jO = Math.sin(jT*Math.PI)*50;
-
-            if(isWin && jumpCount < 3) { 
-                winAn += 0.1; 
-                jO = Math.abs(Math.sin(winAn))*50; 
-                if(winAn >= Math.PI) { 
-                    winAn = 0; 
-                    jumpCount++; 
-                    playSound("jump");
-                    if(jumpCount >= 3) showWinPanel();
-                } 
-            }
-            if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
-
-            if(jT < 1){
+            
+            let jO = 0;
+            if(jT < 1) {
                 jT += 0.04;
                 hP.x = sP.x + (tP.x - sP.x) * jT;
                 hP.y = sP.y + (tP.y - sP.y) * jT;
-                if(jT >= 1){
+                jO = Math.sin(jT * Math.PI) * 60;
+                if(jT >= 1) {
                     jT = 1;
-                    // Собираем монету (теперь работает и на последней платформе)
-                    if(pls[cur].hC) { 
-                        coins += 10; 
-                        document.getElementById("coins").innerText = coins; 
-                        playSound("coin"); 
-                    }
-                    if(cur < tasks.length) {
-                        uQ();
-                    } else if (cur === tasks.length + 1) {
-                        // Приземлились на финальную платформу
-                        isWin = true;
-                        winAn = 0;
-                    }
+                    if(pls[cur].hasCoin) { coins += 10; document.getElementById("coins").innerText = coins; playSound("coin"); }
+                    if(cur < tasks.length) uQ();
+                    else { isWin = true; winJumpAn = 0; }
+                }
+            } else if(isWin && jumpCount < 3) {
+                winJumpAn += 0.1;
+                jO = Math.abs(Math.sin(winJumpAn)) * 50;
+                if(winJumpAn >= Math.PI) {
+                    winJumpAn = 0; jumpCount++; playSound("jump");
+                    if(jumpCount >= 3) { document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText="${winT}"; document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>"; }
                 }
             }
+            
+            if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
 
             if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hS/2 + parseInt(hOX), hP.y - hS - jO + parseInt(hOY), hS, hS);
             requestAnimationFrame(u);
@@ -229,39 +202,26 @@
                 const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; 
                 btn.onclick=()=>{ 
                     if(i===tasks[cur].c){ 
-                        playSound("jump"); 
-                        document.getElementById("q").style.display="none"; 
-                        sP={x:hP.x, y:hP.y}; 
-                        cur++; 
-                        tP={x:pls[cur].x, y:pls[cur].y}; 
-                        jT=0;
+                        playSound("jump"); document.getElementById("q").style.display="none"; 
+                        sP={x:hP.x, y:hP.y}; cur++; tP={x:pls[cur].x, y:pls[cur].y}; jT=0; 
                     } else { 
-                        liv--; 
-                        document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); 
+                        liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); 
                         if(liv<=0) showF(false); 
                     } 
                 }; b.appendChild(btn); 
             }); 
         }
 
-        function showWinPanel() {
-            document.getElementById("final").style.display="block"; 
-            document.getElementById("f-title").innerText="${winT}";
-            document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>";
-        }
-
         function showF(win, msg){ 
             clearInterval(timerId); 
             if(!win) {
-                isDead=true; 
-                document.getElementById("q").style.display="none"; 
+                isDead=true; document.getElementById("q").style.display="none"; 
                 document.getElementById("final").style.display="block"; 
                 document.getElementById("f-title").innerText=msg || "ИГРА ОКОНЧЕНА";
                 document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>";
                 playSound("fail");
             }
         }
-        
         uQ(); u(); startTimer();
         <\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
