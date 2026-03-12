@@ -2,159 +2,111 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.2 - Bilingual</title>
+    <title>Genially Builder v10.3 - Lang Switch</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
         .card { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #bc13fe; }
         label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
+        input { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
         #view { flex-grow: 1; padding: 20px; background: #050505; display: flex; flex-direction: column; }
         .win-view { flex-grow: 1; border: 2px solid #333; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
         .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
-        .btn-copy:hover { background: #9b0fd1; transform: scale(1.02); }
         .lang-group { border: 1px dashed #444; padding: 10px; border-radius: 5px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div id="panel">
-    <h2>Editor v10.2 🇷🇺🇺🇸</h2>
-    
-    <label>Герой (URL/GIF):</label>
+    <h2>Editor v10.3 🌐</h2>
+    <label>Герой (GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
     
-    <label>Цвет платформы & Текста:</label>
-    <div style="display:flex; gap:5px">
-        <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
-        <input type="color" id="t-col" value="#ffffff" oninput="draw()">
-    </div>
+    <label>Цвет платформ:</label>
+    <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
 
-    <label>Время на игру (сек):</label>
-    <input type="number" id="g-time" value="60" oninput="draw()">
-
-    <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-    
     <div class="lang-group">
-        <label style="color:#39ff14">Настройки (RU):</label>
-        <input type="text" id="t-win-ru" value="МИССИЯ ВЫПОЛНЕНА!" placeholder="Победа" oninput="draw()">
-        <input type="text" id="t-fail-ru" value="ПОПРОБУЙ ЕЩЕ РАЗ" placeholder="Проигрыш" oninput="draw()">
-        <input type="text" id="t-time-ru" value="ВРЕМЯ ВЫШЛО" placeholder="Время вышло" oninput="draw()">
+        <label style="color:#39ff14">Тексты (RU):</label>
+        <input type="text" id="t-win-ru" value="ПОБЕДА!" oninput="draw()">
+        <input type="text" id="t-fail-ru" value="ПРОИГРЫШ" oninput="draw()">
+        <input type="text" id="t-time-ru" value="ВРЕМЯ ВЫШЛО" oninput="draw()">
     </div>
 
     <div class="lang-group">
-        <label style="color:#00f7ff">Settings (EN):</label>
-        <input type="text" id="t-win-en" value="MISSION ACCOMPLISHED!" placeholder="Win" oninput="draw()">
-        <input type="text" id="t-fail-en" value="TRY AGAIN" placeholder="Fail" oninput="draw()">
-        <input type="text" id="t-time-en" value="TIME IS UP" placeholder="Time out" oninput="draw()">
+        <label style="color:#00f7ff">Texts (EN):</label>
+        <input type="text" id="t-win-en" value="VICTORY!" oninput="draw()">
+        <input type="text" id="t-fail-en" value="GAME OVER" oninput="draw()">
+        <input type="text" id="t-time-en" value="TIME OUT" oninput="draw()">
     </div>
     
     <div id="q-list"></div>
-    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
+    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
 </div>
 
-<div id="view">
-    <div id="f-box" class="win-view"></div>
-</div>
+<div id="view"><div id="f-box" class="win-view"></div></div>
 
 <script>
+    // Вопросы теперь содержат две версии текста
     let qs = [
-        {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
-        {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
-        {q:"Red?", a:["Синий","Красный","Зеленый"], c:1},
-        {q:"One+One?", a:["1","2","3"], c:1},
-        {q:"Sun?", a:["Луна","Звезда","Солнце"], c:2},
-        {q:"Water?", a:["Вода","Огонь","Земля"], c:0}
+        {qr:"Яблоко?", qe:"Apple?", a:["Яблоко / Apple","Груша / Pear","Банан / Banana"], c:0},
+        {qr:"Кот?", qe:"Cat?", a:["Собака / Dog","Кот / Cat","Лев / Lion"], c:1},
+        {qr:"Красный?", qe:"Red?", a:["Синий / Blue","Красный / Red","Зеленый / Green"], c:1}
     ];
 
     function render() {
         const c = document.getElementById('q-list'); c.innerHTML = '';
         qs.forEach((q, i) => {
             const d = document.createElement('div'); d.className = 'card';
-            d.innerHTML = `<strong>${i+1}</strong> <input type="text" value="${q.q}" oninput="qs[${i}].q=this.value;draw()">
-            <div style="display:flex;gap:4px">
-                <input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()"><input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()"><input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()">
-            </div>`;
+            d.innerHTML = `<strong>${i+1}</strong> 
+            <input type="text" value="${q.qr}" oninput="qs[${i}].qr=this.value;draw()">
+            <input type="text" value="${q.qe}" oninput="qs[${i}].qe=this.value;draw()">`;
             c.appendChild(d);
         });
     }
 
     function getCode() {
-        const hero = document.getElementById('h-url').value;
         const col = document.getElementById('h-col').value;
-        const txtCol = document.getElementById('t-col').value;
-        const gameTime = document.getElementById('g-time').value;
-        
-        // Тексты обратной связи
-        const ruTexts = { win: document.getElementById('t-win-ru').value, fail: document.getElementById('t-fail-ru').value, time: document.getElementById('t-time-ru').value };
-        const enTexts = { win: document.getElementById('t-win-en').value, fail: document.getElementById('t-fail-en').value, time: document.getElementById('t-time-en').value };
-        
-        const data = JSON.stringify(qs);
+        const ruT = { win: document.getElementById('t-win-ru').value, fail: document.getElementById('t-fail-ru').value, time: document.getElementById('t-time-ru').value, coin: "МОНЕТЫ" };
+        const enT = { win: document.getElementById('t-win-en').value, fail: document.getElementById('t-fail-en').value, time: document.getElementById('t-time-en').value, coin: "COINS" };
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
-        body,html{margin:0;padding:0;overflow:hidden;background:transparent;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
+        body,html{margin:0;padding:0;overflow:hidden;background:transparent;height:100vh;font-family:sans-serif;color:#fff}
         canvas{display:block}
         #ui{position:absolute;top:15px;left:15px;z-index:10;display:flex;gap:8px}
-        .b{background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold;min-width:60px;text-align:center}
+        #lang-sw{position:absolute;top:15px;right:15px;z-index:100;display:flex;gap:5px}
+        .b{background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);padding:8px 12px;border-radius:10px;border:1px solid ${col};font-size:12px;font-weight:bold}
+        .sw{cursor:pointer;opacity:0.6;transition:0.3s} .sw.active{opacity:1;border-color:#fff;box-shadow:0 0 10px ${col}}
         #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:340px;text-align:center;display:none;z-index:20}
-        #final{position:absolute; top:75px; left:15px; width:300px; text-align:left; display:none; z-index:30; opacity:0; animation: fadeIn 1s forwards;}
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .bt{background:rgba(0,0,0,0.7);border:1px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
-        .bt:hover{background:${col};color:#000}
-        #qt{font-size:28px; margin-bottom:20px; color:${txtCol}; font-weight:bold; text-shadow: 0 4px 0 #000, 0 8px 10px rgba(0,0,0,0.5);}
-        #f-title{color:${col}; font-size:22px; margin-bottom:10px; text-shadow: 0 0 10px ${col}; line-height:1.2;}
+        .bt{background:rgba(0,0,0,0.8);border:1px solid ${col};color:#fff;width:100%;padding:14px;margin:8px 0;border-radius:15px;cursor:pointer;font-weight:bold}
+        #final{position:absolute;top:20%;left:50%;transform:translateX(-50%);text-align:center;display:none;z-index:30}
         </style></head><body>
-        <div id="ui">
-            <div class="b" id="hp">❤️ ❤️ ❤️</div>
-            <div class="b" style="color:#ffcc00">💰 <span id="coins">0</span></div>
-            <div class="b" id="timer" style="color:#39ff14">⏳ ${gameTime}</div>
-        </div>
-        <div id="q"><div id="qt"></div><div id="as"></div></div>
-        <div id="final"><div id="f-title"></div><div id="f-score"></div><button class="bt" style="width:auto; padding:8px 20px" onclick="location.reload()">AGAIN / ЗАНОВО</button></div>
+        <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b" style="color:#ffcc00">💰 <span id="cn">0</span></div><div class="b" id="tm">⏳ 60</div></div>
+        <div id="lang-sw"><div class="b sw active" onclick="setL(\\"ru\\")">RU</div><div class="b sw" onclick="setL(\\"en\\")">EN</div></div>
+        <div id="q"><div id="qt" style="font-size:28px;margin-bottom:20px;font-weight:bold;text-shadow:0 4px #000"></div><div id="as"></div></div>
+        <div id="final"><h1 id="f-t"></h1><h2 id="f-s"></h2><button class="bt" onclick="location.reload()">RESTART</button></div>
         <canvas id="c"></canvas>
         <script>
-        const img=new Image();img.src="${hero}";
-        const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
-        const ruT=${JSON.stringify(ruTexts)}, enT=${JSON.stringify(enTexts)};
+        let lang="ru"; const tasks=${JSON.stringify(qs)}, ruT=${JSON.stringify(ruT)}, enT=${JSON.stringify(enT)};
+        const cvs=document.getElementById("c"),ctx=cvs.getContext("2d");
+        let cur=0,liv=3,timeLeft=60,coins=0,isWin=false,isDead=false,jT=1,sP={x:0,y:0},tP={x:0,y:0};
         const pCol="${col}", pW=60, pH=30, pDepth=15;
-        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0,deadAn=0;
-        let coins=0, timeLeft=${gameTime}, timerId;
 
-        let audioCtx;
-        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === "suspended") audioCtx.resume(); }
-
-        function playSound(type) {
-            initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            if(type==="jump"){ osc.type="square"; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.05, audioCtx.currentTime); }
-            if(type==="coin"){ osc.type="sine"; osc.frequency.setValueAtTime(900, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); }
-            if(type==="fail"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); }
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + (type==="fail"?0.5:0.1));
+        function setL(l){ 
+            lang=l; document.querySelectorAll(".sw").forEach(b=>b.classList.toggle("active", b.innerText.toLowerCase()===l));
+            if(document.getElementById("q").style.display==="block") uQ();
         }
 
-        function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF("time"); },1000); }
+        let audioCtx; function playS(f){ if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)(); const o=audioCtx.createOscillator(),g=audioCtx.createGain(); o.type="sine"; o.frequency.setValueAtTime(f,audioCtx.currentTime); g.gain.setValueAtTime(0.1,audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.1); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.1); }
 
-        function shadeColor(color, percent) {
-            var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
-            return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
-        }
-
-        function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
-        window.onresize=rs;rs();
-        const pls=[];for(let i=0;i<tasks.length+1;i++){pls.push({x:40+(i*65),y:cvs.height-100-(i*35), hasCoin: i>0})}
+        function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight} rs(); window.onresize=rs;
+        const pls=[]; for(let i=0;i<tasks.length+1;i++) pls.push({x:40+(i*70),y:cvs.height-100-(i*40)});
         let hP={x:pls[0].x,y:pls[0].y};
 
-        function dP(x,y,active,i){
+        function dP(x,y,act,i){
             ctx.save(); ctx.translate(x,y);
-            const topC = active ? pCol : "rgba(80,80,80,0.3)";
-            const sideC = active ? shadeColor(pCol, -0.3) : "rgba(50,50,50,0.3)";
-            const frontC = active ? shadeColor(pCol, -0.5) : "rgba(30,30,30,0.3)";
-            ctx.fillStyle = sideC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, pDepth); ctx.lineTo(pW/2, pH/2+pDepth); ctx.lineTo(pW/2, pH/2); ctx.fill();
-            ctx.fillStyle = frontC; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW, pDepth); ctx.lineTo(pW/2, pH/2+pDepth); ctx.lineTo(pW/2, pH/2); ctx.fill();
-            ctx.fillStyle = topC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2, -pH/2); ctx.lineTo(pW, 0); ctx.lineTo(pW/2, pH/2); ctx.fill();
-            if(pls[i].hasCoin && i > cur){
-                ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -45 + Math.sin(Date.now()/200)*5, 8, 0, Math.PI*2); ctx.fill();
-                ctx.strokeStyle="#fff"; ctx.stroke();
-            }
+            ctx.fillStyle=act?pCol:"rgba(80,80,80,0.3)";
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2,-pH/2); ctx.lineTo(pW,0); ctx.lineTo(pW/2,pH/2); ctx.fill();
+            if(i>cur){ ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(pW/2,-40,6,0,7); ctx.fill(); }
             ctx.restore();
         }
 
@@ -162,42 +114,39 @@
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur,i));
             let jO = Math.sin(jT*Math.PI)*50;
-            if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
-            if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
-            if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playSound("coin"); } if(cur<tasks.length) uQ(); else showF("win");}}
-            if(img.complete) ctx.drawImage(img, hP.x + pW/2 - 65, hP.y - 130 - jO + 85, 130, 130);
+            if(jT<1){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; coins+=10; document.getElementById("cn").innerText=coins; if(cur<tasks.length) uQ(); else showF("win");}}
+            ctx.fillStyle="#fff"; ctx.fillRect(hP.x+pW/2-10, hP.y-40-jO, 20, 40); // Заглушка героя
             requestAnimationFrame(u);
         }
 
-        function uQ(){ 
-            document.getElementById("q").style.display="block"; document.getElementById("qt").innerText=tasks[cur].q; 
-            const b=document.getElementById("as"); b.innerHTML=""; 
-            tasks[cur].a.forEach((t,i)=>{ 
-                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; 
-                btn.onclick=()=>{ 
-                    if(i===tasks[cur].c){ playSound("jump"); document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; 
-                    } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF("fail"); } 
-                }; b.appendChild(btn); 
-            }); 
+        function uQ(){
+            document.getElementById("q").style.display="block";
+            const t=tasks[cur]; document.getElementById("qt").innerText=lang=="ru"?t.qr:t.qe;
+            const b=document.getElementById("as"); b.innerHTML="";
+            t.a.forEach((txt,i)=>{
+                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=txt;
+                btn.onclick=()=>{ if(i===t.c){ playS(600); document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF("fail"); }}
+                b.appendChild(btn);
+            });
         }
 
-        function showF(state){ 
-            clearInterval(timerId);
-            document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; 
-            const title = document.getElementById("f-title");
-            if(state==="win"){ isWin=true; title.innerText = ruT.win + " / " + enT.win; }
-            else if(state==="time"){ isDead=true; title.innerText = ruT.time + " / " + enT.time; playSound("fail"); }
-            else { isDead=true; title.innerText = ruT.fail + " / " + enT.fail; playSound("fail"); }
-            document.getElementById("f-score").innerHTML = "<h3>COINS / МОНЕТЫ: "+coins+"</h3>";
+        function showF(s){
+            document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block";
+            const lt = lang=="ru"?ruT:enT;
+            document.getElementById("f-t").innerText = s=="win"?lt.win:lt.fail;
+            document.getElementById("f-s").innerText = lt.coin + ": " + coins;
         }
-        uQ();u();startTimer();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
+
+        setInterval(()=>{ if(!isWin && !isDead) { timeLeft--; document.getElementById("tm").innerText="⏳ "+timeLeft; if(timeLeft<=0) showF("fail"); } },1000);
+        uQ(); u();
+        <\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
 
     function draw() { document.getElementById('f-box').innerHTML = getCode(); }
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Bilingual Code v10.2 Copied!");
+        document.body.removeChild(el); alert("Код v10.3 скопирован!");
     }
     render(); draw();
 </script>
