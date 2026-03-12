@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v8.0 - Perfect Grounding</title>
+    <title>Genially Builder v8.1 - Super Character Edit</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
         .card { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #bc13fe; }
         label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #444; border-radius: 6px; box-sizing: border-box; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
         #view { flex-grow: 1; padding: 20px; background: #050505; display: flex; flex-direction: column; }
         .win-view { flex-grow: 1; border: 2px solid #333; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
         .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
@@ -18,27 +18,31 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v8.0 📐</h2>
+    <h2>Editor v8.1 📏👽</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
     
-    <label>Размер человечка (px):</label>
-    <input type="range" id="h-size" min="30" max="200" value="80" oninput="draw()">
+    <label style="color: #ff007f;">Размер человечка (до 400px!):</label>
+    <input type="range" id="h-size" min="30" max="400" value="130" oninput="draw()">
+    <span style="font-size: 10px; color: #888;">(130 идеально для image_0.png)</span>
 
-    <label style="color: #ff007f;">Компенсация прозрачности (px):</label>
-    <input type="range" id="h-offset" min="0" max="100" value="55" oninput="draw()">
-    <span style="font-size: 10px; color: #888;">Подвигай, если герой парит. (55 идеально для image_0.png)</span>
+    <label style="color: #00f7ff;">Компенсация по Y (парение):</label>
+    <input type="range" id="h-offset" min="0" max="150" value="85" oninput="draw()">
+
+    <label style="color: #39ff14;">Смещение по X (влево/вправо):</label>
+    <input type="range" id="h-x-offset" min="-100" max="100" value="0" oninput="draw()">
+    <span style="font-size: 10px; color: #888;">Подвигай, если герой стоит сбоку от центра.</span>
 
     <label>Цвет платформы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
 
     <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
     <label>Победный текст:</label>
-    <input type="text" id="t-win" value="ВЕЛИКОЛЕПНО!" oninput="draw()">
+    <input type="text" id="t-win" value="МИССИЯ ВЫПОЛНЕНА!" oninput="draw()">
     
     <div id="q-list"></div>
-    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
+    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
 </div>
 
 <div id="view">
@@ -78,6 +82,7 @@
         const hero = document.getElementById('h-url').value;
         const hSize = parseInt(document.getElementById('h-size').value);
         const hOffset = parseInt(document.getElementById('h-offset').value);
+        const hXOffset = parseInt(document.getElementById('h-x-offset').value);
         const col = document.getElementById('h-col').value;
         const winT = document.getElementById('t-win').value;
         const data = JSON.stringify(qs);
@@ -100,7 +105,7 @@
         <script>
         const img=new Image();img.src="${hero}";
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
-        const hSize = ${hSize}, hOffset = ${hOffset};
+        const hSize = ${hSize}, hOffset = ${hOffset}, hXOffset = ${hXOffset};
         const pW = 56, pH = 28; 
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,winAn=0,jumpCount=0;
         const ctxA = new (window.AudioContext || window.webkitAudioContext)();
@@ -117,8 +122,9 @@
             if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
             else if(isWin && jumpCount >= 3) { jO = 0; }
             if(jT<1){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}}
-            // **КОРРЕКЦИЯ ПО Y:** hP.y - hSize - jO + hOffset (hOffset компенсирует пустоту снизу)
-            if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2, hP.y - hSize - jO + hOffset, hSize, hSize);
+            // **НОВАЯ ЛОГИКА ОТРИСОВКИ С УЧЕТОМ X И Y СМЕЩЕНИЙ:** // Х: hP.x + pW/2 - hSize/2 + hXOffset (добавили смещение влево/вправо)
+            // Y: hP.y - hSize - jO + hOffset (hOffset компенсирует пустоту снизу)
+            if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2 + hXOffset, hP.y - hSize - jO + hOffset, hSize, hSize);
             requestAnimationFrame(u);
         }
         function uQ(){ document.getElementById("stn").innerText=(cur+1); document.getElementById("q").style.display="block"; document.getElementById("qt").innerText=tasks[cur].q; const b=document.getElementById("as"); b.innerHTML=""; tasks[cur].a.forEach((t,i)=>{ const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; btn.onclick=()=>{ if(i===tasks[cur].c){ document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); } }; b.appendChild(btn); }); }
@@ -130,7 +136,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код с компенсацией парения скопирован!");
+        document.body.removeChild(el); alert("Код (v8.1) с супер-редактированием героя скопирован!");
     }
     render(); draw();
 </script>
