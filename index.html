@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v8.2 - Fall Edition</title>
+    <title>Genially Builder v8.3 - 3D Platform Edition</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -18,18 +18,18 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v8.2 📏💀</h2>
+    <h2>Editor v8.3 📏🧊</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
     
-    <label style="color: #ff007f;">Размер человечка (до 400px!):</label>
+    <label style="color: #ff007f;">Размер человечка:</label>
     <input type="range" id="h-size" min="30" max="400" value="130" oninput="draw()">
 
     <label style="color: #00f7ff;">Компенсация по Y (парение):</label>
     <input type="range" id="h-offset" min="0" max="150" value="85" oninput="draw()">
 
-    <label style="color: #39ff14;">Смещение по X (влево/вправо):</label>
+    <label style="color: #39ff14;">Смещение по X:</label>
     <input type="range" id="h-x-offset" min="-100" max="100" value="0" oninput="draw()">
 
     <label>Цвет платформы:</label>
@@ -102,33 +102,67 @@
         <script>
         const img=new Image();img.src="${hero}";
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
-        const hSize = ${hSize}, hOffset = ${hOffset}, hXOffset = ${hXOffset};
-        const pW = 56, pH = 28; 
+        const hSize = ${hSize}, hOffset = ${hOffset}, hXOffset = ${hXOffset}, pCol = "${col}";
+        const pW = 60, pH = 30, pDepth = 15; 
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0;
-        const ctxA = new (window.AudioContext || window.webkitAudioContext)();
-        function playWin() { [523,659,783,1046].forEach((f,i)=>{const osc=ctxA.createOscillator(),g=ctxA.createGain(); osc.frequency.value=f; g.gain.setValueAtTime(0.1,ctxA.currentTime+i*0.15); g.gain.exponentialRampToValueAtTime(0.0001,ctxA.currentTime+i*0.15+0.6); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime+i*0.15); osc.stop(ctxA.currentTime+i*0.15+0.6);});}
+        
+        function shadeColor(color, percent) {
+            var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
+            return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
+        }
+
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
         window.onresize=rs;rs();
-        const pls=[];for(let i=0;i<13;i++){pls.push({x:40+(i*65),y:cvs.height-80-(i*35)})}
+        const pls=[];for(let i=0;i<13;i++){pls.push({x:40+(i*65),y:cvs.height-100-(i*35)})}
         let hP={x:pls[0].x,y:pls[0].y};
-        function dP(x,y,a){ctx.save(); ctx.translate(x,y); ctx.fillStyle=a?"${col}":"rgba(255,255,255,0.1)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2,-pH/2); ctx.lineTo(pW,0); ctx.lineTo(pW/2,pH/2); ctx.closePath(); ctx.fill(); ctx.restore();}
+
+        function dP(x,y,active){
+            ctx.save(); ctx.translate(x,y);
+            const topC = active ? pCol : "rgba(80,80,80,0.3)";
+            const sideC = active ? shadeColor(pCol, -0.3) : "rgba(50,50,50,0.3)";
+            const frontC = active ? shadeColor(pCol, -0.5) : "rgba(30,30,30,0.3)";
+
+            // Боковая грань (лево)
+            ctx.fillStyle = sideC;
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, pDepth); ctx.lineTo(pW/2, pH/2 + pDepth); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
+            // Боковая грань (право)
+            ctx.fillStyle = frontC;
+            ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW, pDepth); ctx.lineTo(pW/2, pH/2 + pDepth); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
+            // Верхняя грань
+            ctx.fillStyle = topC;
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2, -pH/2); ctx.lineTo(pW, 0); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
+            ctx.restore();
+        }
+
         function u(){
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
             let jO = Math.sin(jT*Math.PI)*50;
             if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
             else if(isWin && jumpCount >= 3) { jO = 0; }
-            
-            // Логика падения
             if(isDead) { fallY += 8; jO = -fallY; } 
-
             if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}}
-            
             if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2 + hXOffset, hP.y - hSize - jO + hOffset, hSize, hSize);
             requestAnimationFrame(u);
         }
-        function uQ(){ document.getElementById("stn").innerText=(cur+1); document.getElementById("q").style.display="block"; document.getElementById("qt").innerText=tasks[cur].q; const b=document.getElementById("as"); b.innerHTML=""; tasks[cur].a.forEach((t,i)=>{ const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; btn.onclick=()=>{ if(i===tasks[cur].c){ document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); } }; b.appendChild(btn); }); }
-        function showF(win){ document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=win?"${winT}":"ПОПРОБУЙ ЕЩЕ РАЗ"; if(win) { isWin=true; playWin(); } else { isDead=true; } }
+
+        function uQ(){ 
+            document.getElementById("stn").innerText=(cur+1); 
+            document.getElementById("q").style.display="block"; 
+            document.getElementById("qt").innerText=tasks[cur].q; 
+            const b=document.getElementById("as"); b.innerHTML=""; 
+            tasks[cur].a.forEach((t,i)=>{ 
+                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; 
+                btn.onclick=()=>{ 
+                    if(i===tasks[cur].c){ 
+                        document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; 
+                    } else { 
+                        liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); 
+                    } 
+                }; b.appendChild(btn); 
+            }); 
+        }
+        function showF(win){ document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=win?"${winT}":"ПОПРОБУЙ ЕЩЕ РАЗ"; if(win) isWin=true; else isDead=true; }
         uQ();u();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
 
@@ -136,7 +170,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код (v8.2) с анимацией падения скопирован!");
+        document.body.removeChild(el); alert("Код v8.3 (3D Платформы) скопирован!");
     }
     render(); draw();
 </script>
