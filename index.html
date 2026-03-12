@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v8.5 - Ghost UI</title>
+    <title>Genially Builder v8.6 - Atmo Edition</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -18,7 +18,7 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v8.5 👻✨</h2>
+    <h2>Editor v8.6 🔊✨</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -26,13 +26,13 @@
     <label style="color: #ff007f;">Размер человечка:</label>
     <input type="range" id="h-size" min="30" max="400" value="130" oninput="draw()">
 
-    <label style="color: #00f7ff;">Компенсация по Y (парение):</label>
+    <label style="color: #00f7ff;">Компенсация по Y:</label>
     <input type="range" id="h-offset" min="0" max="150" value="85" oninput="draw()">
 
     <label style="color: #39ff14;">Смещение по X:</label>
     <input type="range" id="h-x-offset" min="-100" max="100" value="0" oninput="draw()">
 
-    <label>Цвет темы/платформ:</label>
+    <label>Цвет темы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
 
     <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
@@ -91,8 +91,12 @@
         .b{background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold}
         #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:340px;text-align:center;display:none;z-index:20}
         
-        /* ПОЛНОСТЬЮ ПРОЗРАЧНОЕ ФИНАЛЬНОЕ ОКНО */
-        #final{position:absolute; top:75px; left:15px; width:250px; text-align:left; display:none; z-index:30;}
+        #final{
+            position:absolute; top:75px; left:15px; width:250px; text-align:left; 
+            display:none; z-index:30; opacity:0;
+            animation: fadeIn 1s forwards;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
         .bt{background:rgba(0,0,0,0.7);border:1px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
         .bt:hover{background:${col};color:#000}
@@ -110,6 +114,20 @@
         const pW = 60, pH = 30, pDepth = 15; 
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0;
         
+        // Звуковой движок
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playJumpSound() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
         function shadeColor(color, percent) {
             var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
             return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
@@ -139,7 +157,6 @@
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
             let jO = Math.sin(jT*Math.PI)*50;
             if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
-            else if(isWin && jumpCount >= 3) { jO = 0; }
             if(isDead) { fallY += 8; jO = -fallY; } 
             if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}}
             if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2 + hXOffset, hP.y - hSize - jO + hOffset, hSize, hSize);
@@ -155,6 +172,7 @@
                 const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; 
                 btn.onclick=()=>{ 
                     if(i===tasks[cur].c){ 
+                        playJumpSound();
                         document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; 
                     } else { 
                         liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); 
@@ -170,7 +188,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v8.5 (Ghost UI) скопирован!");
+        document.body.removeChild(el); alert("Код v8.6 (Звук + Плавность) скопирован!");
     }
     render(); draw();
 </script>
