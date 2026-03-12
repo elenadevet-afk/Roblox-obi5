@@ -1,1 +1,201 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Genially Builder v8.4 - Fixed Visibility</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
+        #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
+        .card { background: #252525; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #bc13fe; }
+        label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
+        #view { flex-grow: 1; padding: 20px; background: #050505; display: flex; flex-direction: column; }
+        .win-view { flex-grow: 1; border: 2px solid #333; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
+        .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
+        .btn-copy:hover { background: #9b0fd1; transform: scale(1.02); }
+    </style>
+</head>
+<body>
 
+<div id="panel">
+    <h2>Editor v8.4 🛠️</h2>
+    <label>Герой (URL/GIF):</label>
+    <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
+    
+    <label>Размер героя:</label>
+    <input type="range" id="h-size" min="30" max="400" value="130" oninput="draw()">
+
+    <label>Коррекция Y (парение):</label>
+    <input type="range" id="h-offset" min="0" max="150" value="85" oninput="draw()">
+
+    <label>Смещение по X:</label>
+    <input type="range" id="h-x-offset" min="-100" max="100" value="0" oninput="draw()">
+
+    <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+    <label>Текст при ПРОИГРЫШЕ:</label>
+    <input type="text" id="t-lose" value="ОЙ! ТЫ УПАЛ..." oninput="draw()">
+    
+    <div id="q-list"></div>
+    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
+</div>
+
+<div id="view">
+    <div id="f-box" class="win-view"></div>
+</div>
+
+<script>
+    let qs = [
+        {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
+        {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
+        {q:"Red?", a:["Синий","Красный","Зеленый"], c:1},
+        {q:"One+One?", a:["1","2","3"], c:1},
+        {q:"Sun?", a:["Луна","Звезда","Солнце"], c:2},
+        {q:"Water?", a:["Вода","Огонь","Земля"], c:0},
+        {q:"Big?", a:["Малый","Большой","Средний"], c:1},
+        {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
+        {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0},
+        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1},
+        {q:"Jump?", a:["Бег","Прыжок","Сон"], c:1},
+        {q:"Book?", a:["Книга","Ручка","Лист"], c:0}
+    ];
+
+    function render() {
+        const c = document.getElementById('q-list'); c.innerHTML = '';
+        qs.forEach((q, i) => {
+            const d = document.createElement('div'); d.className = 'card';
+            d.innerHTML = `<strong>${i+1}</strong> <input type="text" value="${q.q}" oninput="qs[${i}].q=this.value;draw()">
+            <div style="display:flex;gap:4px">
+                <input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()"><input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()"><input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()">
+            </div>`;
+            c.appendChild(d);
+        });
+    }
+
+    function getCode() {
+        const hero = document.getElementById('h-url').value;
+        const hSize = parseInt(document.getElementById('h-size').value);
+        const hOffset = parseInt(document.getElementById('h-offset').value);
+        const hXOffset = parseInt(document.getElementById('h-x-offset').value);
+        const col = document.getElementById('h-col').value;
+        const loseT = document.getElementById('t-lose').value;
+        const data = JSON.stringify(qs);
+
+        return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+        body,html{margin:0;padding:0;overflow:hidden;background:transparent;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
+        canvas{display:block}
+        #ui{position:absolute;top:15px;left:15px;z-index:10;display:flex;gap:8px}
+        .b{background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold}
+        #q, #final{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:340px;text-align:center;display:none;z-index:20}
+        .bt{background:rgba(0,0,0,0.8);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
+        .bt:hover{background:${col};color:#000}
+        h2{margin:0 0 15px 0; color:${col}; font-size:28px; text-shadow: 0 0 20px ${col}}
+        #qt{font-size:22px; margin-bottom:20px; text-shadow: 2px 2px 10px #000}
+        </style></head><body>
+        <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b">ШАГ: <span id="stn">1</span>/12</div></div>
+        <div id="q"><div id="qt"></div><div id="as"></div></div>
+        <div id="final"><h2 id="f-title"></h2><button class="bt" onclick="location.reload()">ПОПРОБОВАТЬ СНОВА</button></div>
+        <canvas id="c"></canvas>
+        <script>
+        const img=new Image(); 
+        img.onload = () => { console.log("Hero Loaded"); };
+        img.src="${hero}";
+        const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
+        const hSize = ${hSize}, hOffset = ${hOffset}, hXOffset = ${hXOffset};
+        const pW = 56, pH = 28; 
+        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isLose=false,fallY=0,winAn=0,jumpCount=0;
+        const ctxA = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playWin() { [523,659,783,1046].forEach((f,i)=>{const osc=ctxA.createOscillator(),g=ctxA.createGain(); osc.frequency.value=f; g.gain.setValueAtTime(0.1,ctxA.currentTime+i*0.15); g.gain.exponentialRampToValueAtTime(0.0001,ctxA.currentTime+i*0.15+0.6); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime+i*0.15); osc.stop(ctxA.currentTime+i*0.15+0.6);});}
+        
+        function playFall() { 
+            const osc = ctxA.createOscillator(), g = ctxA.createGain();
+            osc.frequency.setValueAtTime(600, ctxA.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(100, ctxA.currentTime + 1);
+            g.gain.setValueAtTime(0.2, ctxA.currentTime);
+            g.gain.linearRampToValueAtTime(0, ctxA.currentTime + 1);
+            osc.connect(g); g.connect(ctxA.destination);
+            osc.start(); osc.stop(ctxA.currentTime + 1);
+        }
+
+        function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight; updatePls();}
+        let pls=[];
+        function updatePls(){
+            pls=[];
+            for(let i=0;i<13;i++){
+                pls.push({x:40+(i*65),y:cvs.height-80-(i*35)});
+            }
+            if(jT>=1 && !isLose) { hP.x=pls[cur].x; hP.y=pls[cur].y; }
+        }
+        window.onresize=rs; rs();
+        let hP={x:pls[0].x,y:pls[0].y};
+
+        function dP(x,y,a){ctx.save(); ctx.translate(x,y); ctx.fillStyle=a?"${col}":"rgba(255,255,255,0.1)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2,-pH/2); ctx.lineTo(pW,0); ctx.lineTo(pW/2,pH/2); ctx.closePath(); ctx.fill(); ctx.restore();}
+        
+        function u(){
+            ctx.clearRect(0,0,cvs.width,cvs.height);
+            pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
+            
+            let currentJO = 0;
+            if(!isLose) {
+                currentJO = Math.sin(jT*Math.PI)*50;
+                if(isWin) {
+                   if(jumpCount < 3) {
+                       winAn += 0.15; currentJO = Math.abs(Math.sin(winAn))*40; 
+                       if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; }
+                   } else { currentJO = 0; }
+                }
+                
+                if(jT<1){ 
+                    jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; 
+                    if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}
+                }
+            } else {
+                fallY += 10;
+                currentJO = -fallY;
+                if(fallY > 800) showF(false);
+            }
+            
+            if(img.complete) {
+                ctx.drawImage(img, hP.x + pW/2 - hSize/2 + hXOffset, hP.y - hSize - currentJO + hOffset, hSize, hSize);
+            }
+            requestAnimationFrame(u);
+        }
+
+        function uQ(){
+            document.getElementById("stn").innerText=(cur+1);
+            document.getElementById("q").style.display="block";
+            document.getElementById("qt").innerText=tasks[cur].q;
+            const b=document.getElementById("as"); b.innerHTML="";
+            tasks[cur].a.forEach((t,i)=>{
+                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t;
+                btn.onclick=()=>{
+                    if(i===tasks[cur].c){
+                        document.getElementById("q").style.display="none";
+                        sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0;
+                    } else {
+                        liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv));
+                        if(liv<=0) { isLose=true; playFall(); document.getElementById("q").style.display="none"; }
+                    }
+                }; b.appendChild(btn);
+            });
+        }
+
+        function showF(win){
+            document.getElementById("q").style.display="none";
+            document.getElementById("final").style.display="block";
+            document.getElementById("f-title").innerText=win?"ВЕЛИКОЛЕПНО!":"${loseT}";
+            if(win && !isWin) { isWin=true; playWin(); }
+        }
+        uQ(); u(); <\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
+    }
+
+    function draw() { document.getElementById('f-box').innerHTML = getCode(); }
+    function copyIt() {
+        const el = document.createElement('textarea'); el.value = getCode();
+        document.body.appendChild(el); el.select(); document.execCommand('copy');
+        document.body.removeChild(el); alert("Код v8.4 исправлен и скопирован!");
+    }
+    render(); draw();
+</script>
+</body>
+</html>
