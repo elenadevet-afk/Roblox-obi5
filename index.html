@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v8.2 - Epic Fall & Sound</title>
+    <title>Genially Builder v8.3 - Fixed & Falling</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -18,15 +18,14 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v8.2 📏坠</h2>
-    
+    <h2>Editor v8.3 📏🚀</h2>
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
     
     <label>Размер героя:</label>
     <input type="range" id="h-size" min="30" max="400" value="130" oninput="draw()">
 
-    <label>Компенсация по Y (парение):</label>
+    <label>Коррекция Y (парение):</label>
     <input type="range" id="h-offset" min="0" max="150" value="85" oninput="draw()">
 
     <label>Смещение по X:</label>
@@ -79,7 +78,6 @@
         const hXOffset = parseInt(document.getElementById('h-x-offset').value);
         const col = document.getElementById('h-col').value;
         const loseT = document.getElementById('t-lose').value;
-        const winT = document.getElementById('t-win')?.value || "ВЕЛИКОЛЕПНО!";
         const data = JSON.stringify(qs);
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
@@ -121,23 +119,34 @@
         window.onresize=rs;rs();
         const pls=[];for(let i=0;i<13;i++){pls.push({x:40+(i*65),y:cvs.height-80-(i*35)})}
         let hP={x:pls[0].x,y:pls[0].y};
+
         function dP(x,y,a){ctx.save(); ctx.translate(x,y); ctx.fillStyle=a?"${col}":"rgba(255,255,255,0.1)"; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2,-pH/2); ctx.lineTo(pW,0); ctx.lineTo(pW/2,pH/2); ctx.closePath(); ctx.fill(); ctx.restore();}
         
         function u(){
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
-            let jO = Math.sin(jT*Math.PI)*50;
             
-            if(isWin && jumpCount < 3) { 
-                winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; 
-                if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; }
-            } else if(isWin && jumpCount >= 3) { jO = 0; }
+            let currentJO = 0;
+            if(!isLose) {
+                currentJO = Math.sin(jT*Math.PI)*50;
+                if(isWin && jumpCount < 3) { 
+                    winAn += 0.15; currentJO = Math.abs(Math.sin(winAn))*40; 
+                    if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; }
+                } else if(isWin && jumpCount >= 3) { currentJO = 0; }
+                
+                if(jT<1){ 
+                    jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; 
+                    if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}
+                }
+            } else {
+                fallY += 10;
+                currentJO = -fallY;
+                if(fallY > 800) showF(false);
+            }
             
-            if(isLose) { fallY += 8; jO = -fallY; if(fallY > cvs.height) showF(false); }
-
-            if(jT<1 && !isLose){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}}
-            
-            if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2 + hXOffset, hP.y - hSize - jO + hOffset, hSize, hSize);
+            if(img.complete) {
+                ctx.drawImage(img, hP.x + pW/2 - hSize/2 + hXOffset, hP.y - hSize - currentJO + hOffset, hSize, hSize);
+            }
             requestAnimationFrame(u);
         }
 
@@ -154,7 +163,7 @@
                         sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0;
                     } else {
                         liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv));
-                        if(liv<=0) { isLose=true; playFall(); document.getElementById("q").style.display="none"; }
+                        if(liv<=0 && !isLose) { isLose=true; playFall(); document.getElementById("q").style.display="none"; }
                     }
                 }; b.appendChild(btn);
             });
@@ -163,8 +172,8 @@
         function showF(win){
             document.getElementById("q").style.display="none";
             document.getElementById("final").style.display="block";
-            document.getElementById("f-title").innerText=win?"${winT}":"${loseT}";
-            if(win) { isWin=true; playWin(); }
+            document.getElementById("f-title").innerText=win?"ВЕЛИКОЛЕПНО!":"${loseT}";
+            if(win && !isWin) { isWin=true; playWin(); }
         }
         uQ();u();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
@@ -173,7 +182,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v8.2 с эффектом падения скопирован!");
+        document.body.removeChild(el); alert("Код v8.3 исправлен и скопирован!");
     }
     render(); draw();
 </script>
