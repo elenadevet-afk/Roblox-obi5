@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.5 - 12 Platforms Fixed</title>
+    <title>Genially Builder v11.6 - Final Coin & 3 Jumps</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -26,7 +26,7 @@
         <div id="sw-en" class="ed-sw" onclick="setEditorLang('en')">ENGLISH</div>
     </div>
 
-    <h2 id="ed-title">Editor v11.5 🚀</h2>
+    <h2 id="ed-title">Editor v11.6 💎</h2>
     
     <label id="l-hero">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -62,8 +62,8 @@
 <script>
     let currentLang = 'ru';
     const translations = {
-        ru: { title:"Редактор v11.5", hero:"Герой (URL):", size:"Размер:", offsetY:"Смещение Y:", offsetX:"Смещение X:", pcol:"Цвет:", tcol:"Цвет текста:", time:"Время:", win:"Победа:", btn:"КОПИРОВАТЬ КОД", restart:"ЗАНОВО", score:"МОНЕТ:", timeout:"ВРЕМЯ ВЫШЛО!", alert:"Код скопирован!" },
-        en: { title:"Editor v11.5", hero:"Hero (URL):", size:"Size:", offsetY:"Y Offset:", offsetX:"X Offset:", pcol:"Color:", tcol:"Text Color:", time:"Time:", win:"Victory:", btn:"COPY CODE", restart:"RESTART", score:"COINS:", timeout:"TIME IS UP!", alert:"Code copied!" }
+        ru: { title:"Редактор v11.6", hero:"Герой (URL):", size:"Размер:", offsetY:"Смещение Y:", offsetX:"Смещение X:", pcol:"Цвет:", tcol:"Цвет текста:", time:"Время:", win:"Победа:", btn:"КОПИРОВАТЬ КОД", restart:"ЗАНОВО", score:"МОНЕТ:", timeout:"ВРЕМЯ ВЫШЛО!", alert:"Код скопирован!" },
+        en: { title:"Editor v11.6", hero:"Hero (URL):", size:"Size:", offsetY:"Y Offset:", offsetX:"X Offset:", pcol:"Color:", tcol:"Text Color:", time:"Time:", win:"Victory:", btn:"COPY CODE", restart:"RESTART", score:"COINS:", timeout:"TIME IS UP!", alert:"Code copied!" }
     };
 
     function setEditorLang(lang) {
@@ -84,7 +84,6 @@
         draw();
     }
 
-    // 10 вопросов = 10 прыжков. Всего платформ будет 1 (старт) + 10 + 1 (финиш) = 12.
     let qs = [
         {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
         {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
@@ -159,7 +158,11 @@
         }
 
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight} rs(); window.onresize=rs;
-        const pls=[];for(let i=0;i<tasks.length+2;i++){pls.push({x:40+(i*65),y:cvs.height-100-(i*35), hC: i>0 && i<=tasks.length})}
+        const pls=[];
+        for(let i=0;i<tasks.length+2;i++){
+            // Теперь hasCoin (hC) истинно для всех платформ КРОМЕ первой (стартовой)
+            pls.push({x:40+(i*65),y:cvs.height-100-(i*35), hC: i > 0});
+        }
         let hP={x:pls[0].x,y:pls[0].y};
 
         function dP(x,y,act,i){
@@ -168,6 +171,7 @@
             ctx.fillStyle=sc; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,pD); ctx.lineTo(pW/2,pH/2+pD); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=fc; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW,pD); ctx.lineTo(pW/2,pH/2+pD); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=tc; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2,-pH/2); ctx.lineTo(pW,0); ctx.lineTo(pW/2,pH/2); ctx.fill();
+            // Рисуем монету, если она еще не собрана
             if(pls[i].hC && i > cur){
                 ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -45+Math.sin(Date.now()/200)*5, 8, 0, 7); ctx.fill();
             }
@@ -179,23 +183,36 @@
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur,i));
             let jO = Math.sin(jT*Math.PI)*50;
 
-            if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
+            if(isWin && jumpCount < 3) { 
+                winAn += 0.1; 
+                jO = Math.abs(Math.sin(winAn))*50; 
+                if(winAn >= Math.PI) { 
+                    winAn = 0; 
+                    jumpCount++; 
+                    playSound("jump");
+                    if(jumpCount >= 3) showWinPanel();
+                } 
+            }
             if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
 
-            // Логика полета
             if(jT < 1){
                 jT += 0.04;
                 hP.x = sP.x + (tP.x - sP.x) * jT;
                 hP.y = sP.y + (tP.y - sP.y) * jT;
                 if(jT >= 1){
                     jT = 1;
-                    if(pls[cur].hC) { coins += 10; document.getElementById("coins").innerText = coins; playSound("coin"); }
-                    // После приземления проверяем, есть ли еще вопросы
+                    // Собираем монету (теперь работает и на последней платформе)
+                    if(pls[cur].hC) { 
+                        coins += 10; 
+                        document.getElementById("coins").innerText = coins; 
+                        playSound("coin"); 
+                    }
                     if(cur < tasks.length) {
                         uQ();
-                    } else if (cur === tasks.length) {
-                        // Это было приземление на финишную (12-ю) платформу
-                        showF(true);
+                    } else if (cur === tasks.length + 1) {
+                        // Приземлились на финальную платформу
+                        isWin = true;
+                        winAn = 0;
                     }
                 }
             }
@@ -217,7 +234,7 @@
                         sP={x:hP.x, y:hP.y}; 
                         cur++; 
                         tP={x:pls[cur].x, y:pls[cur].y}; 
-                        jT=0; // Запуск прыжка
+                        jT=0;
                     } else { 
                         liv--; 
                         document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); 
@@ -227,18 +244,24 @@
             }); 
         }
 
+        function showWinPanel() {
+            document.getElementById("final").style.display="block"; 
+            document.getElementById("f-title").innerText="${winT}";
+            document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>";
+        }
+
         function showF(win, msg){ 
             clearInterval(timerId); 
-            isWin=win; 
-            if(!win) isDead=true; 
-            document.getElementById("q").style.display="none"; 
-            document.getElementById("final").style.display="block"; 
-            document.getElementById("f-title").innerText=msg || (win?"${winT}":"ИГРА ОКОНЧЕНА");
-            document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>";
-            if(!win) playSound("fail");
+            if(!win) {
+                isDead=true; 
+                document.getElementById("q").style.display="none"; 
+                document.getElementById("final").style.display="block"; 
+                document.getElementById("f-title").innerText=msg || "ИГРА ОКОНЧЕНА";
+                document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>";
+                playSound("fail");
+            }
         }
         
-        // Начало игры
         uQ(); u(); startTimer();
         <\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
