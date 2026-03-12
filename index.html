@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v7.8 - Independent Hero Scale</title>
+    <title>Genially Builder v7.9 - Grounded Hero</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -18,19 +18,19 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v7.8 📏</h2>
+    <h2>Editor v7.9 📏</h2>
     
     <label>Герой (URL):</label>
     <input type="text" id="h-url" value="https://cdn-icons-png.flaticon.com/512/616/616430.png" oninput="draw()">
     
-    <label>Размер человечка (px):</label>
-    <input type="range" id="h-size" min="30" max="200" value="80" oninput="draw()">
+    <label>Размер человечка (до 300px):</label>
+    <input type="range" id="h-size" min="30" max="300" value="100" oninput="draw()">
 
     <label>Цвет платформы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
 
     <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-    <label>Текст при ПОБЕДЕ:</label>
+    <label>Победный текст:</label>
     <input type="text" id="t-win" value="ВЕЛИКОЛЕПНО!" oninput="draw()">
     
     <div id="q-list"></div>
@@ -94,14 +94,13 @@
         <script>
         const img=new Image();img.src="${hero}";
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
-        const hSize = ${hSize}; 
-        const pW = 56, pH = 28; // Фиксированный размер платформы
+        const hSize = ${hSize}, pW = 60, pH = 30;
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,winAn=0,jumpCount=0;
         const ctxA = new (window.AudioContext || window.webkitAudioContext)();
         function playWin() { [523,659,783,1046].forEach((f,i)=>{const osc=ctxA.createOscillator(),g=ctxA.createGain(); osc.frequency.value=f; g.gain.setValueAtTime(0.1,ctxA.currentTime+i*0.15); g.gain.exponentialRampToValueAtTime(0.0001,ctxA.currentTime+i*0.15+0.6); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime+i*0.15); osc.stop(ctxA.currentTime+i*0.15+0.6);});}
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
         window.onresize=rs;rs();
-        const pls=[];for(let i=0;i<13;i++){pls.push({x:40+(i*65),y:cvs.height-80-(i*35)})}
+        const pls=[];for(let i=0;i<13;i++){pls.push({x:50+(i*70),y:cvs.height-100-(i*40)})}
         let hP={x:pls[0].x,y:pls[0].y};
         function dP(x,y,a){
             ctx.save(); ctx.translate(x,y); 
@@ -112,13 +111,13 @@
         function u(){
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
-            let jO = Math.sin(jT*Math.PI)*50;
-            if(isWin && jumpCount < 23) { 
+            let jO = Math.sin(jT*Math.PI)*60;
+            if(isWin && jumpCount < 3) { 
                 winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; 
                 if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; }
-            } else if(isWin && jumpCount >= 23) { jO = 0; }
+            } else if(isWin && jumpCount >= 3) { jO = 0; }
             if(jT<1){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}}
-            // Центровка: hP.x + pW/2 - hSize/2 (по горизонтали), hP.y (по вертикали)
+            // Отрисовка: hSize используется для центровки и "посадки" на платформу
             if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2, hP.y - jO - hSize + 5, hSize, hSize);
             requestAnimationFrame(u);
         }
@@ -153,7 +152,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v7.8 скопирован!");
+        document.body.removeChild(el); alert("Код v7.9 готов!");
     }
     render(); draw();
 </script>
