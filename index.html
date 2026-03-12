@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.0 - Gold Rush</title>
+    <title>Genially Builder v10.1 - Isometric Gold Rush</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -18,7 +18,7 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v10.0 💰⏳</h2>
+    <h2>Editor v10.1 💰🧱⏳</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -112,6 +112,7 @@
         const img=new Image();img.src="${hero}";
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
         const hSize=${hSize}, hOffset=${hOffset}, pCol="${col}";
+        const pW = 60, pH = 30, pDepth = 15; // Размеры для 3D платформ
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0,deadAn=0;
         let coins=0, timeLeft=${gameTime}, timerId;
 
@@ -128,18 +129,33 @@
 
         function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "ВРЕМЯ ВЫШЛО!"); },1000); }
 
+        function shadeColor(color, percent) {
+            var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
+            return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
+        }
+
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
         window.onresize=rs;rs();
         const pls=[];for(let i=0;i<13;i++){pls.push({x:40+(i*65),y:cvs.height-100-(i*35), hasCoin: i>0})}
         let hP={x:pls[0].x,y:pls[0].y};
 
+        // Улучшенная функция отрисовки изометрических 3D платформ
         function dP(x,y,active,i){
             ctx.save(); ctx.translate(x,y);
             const topC = active ? pCol : "rgba(80,80,80,0.3)";
-            ctx.fillStyle = topC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(30, -15); ctx.lineTo(60, 0); ctx.lineTo(30, 15); ctx.closePath(); ctx.fill();
-            // Рисуем монету
+            const sideC = active ? shadeColor(pCol, -0.3) : "rgba(50,50,50,0.3)";
+            const frontC = active ? shadeColor(pCol, -0.5) : "rgba(30,30,30,0.3)";
+
+            // Боковая грань (лево)
+            ctx.fillStyle = sideC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, pDepth); ctx.lineTo(pW/2, pH/2 + pDepth); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
+            // Боковая грань (право/перед)
+            ctx.fillStyle = frontC; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW, pDepth); ctx.lineTo(pW/2, pH/2 + pDepth); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
+            // Верхняя грань (ромб)
+            ctx.fillStyle = topC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2, -pH/2); ctx.lineTo(pW, 0); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
+
+            // Рисуем монету над платформой
             if(pls[i].hasCoin && i > cur){
-                ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(30, -40 + Math.sin(Date.now()/200)*5, 8, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -45 + Math.sin(Date.now()/200)*5, 8, 0, Math.PI*2); ctx.fill();
                 ctx.strokeStyle = "#fff"; ctx.lineWidth=2; ctx.stroke();
             }
             ctx.restore();
@@ -152,7 +168,8 @@
             if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
             if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
             if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playSound("coin"); } if(cur<12) uQ(); else showF(true);}}
-            if(img.complete) ctx.drawImage(img, hP.x + 30 - hSize/2, hP.y - hSize - jO + hOffset, hSize, hSize);
+            // Центрируем героя по центру платформы pW/2
+            if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2, hP.y - hSize - jO + hOffset, hSize, hSize);
             requestAnimationFrame(u);
         }
 
@@ -182,7 +199,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v10.0 (Золотая Лихорадка) скопирован!");
+        document.body.removeChild(el); alert("Код v10.1 (Isometric Gold Rush) скопирован!");
     }
     render(); draw();
 </script>
