@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.8 - Final Restoration</title>
+    <title>Genially Builder v11.9 - Multilang & Sounds</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -12,44 +12,74 @@
         #view { flex-grow: 1; padding: 20px; background: #050505; display: flex; flex-direction: column; }
         .win-view { flex-grow: 1; border: 2px solid #333; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
         .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
+        .lang-sw { display: flex; gap: 5px; margin-bottom: 20px; background: #000; padding: 5px; border-radius: 8px; border: 1px solid #333; }
+        .sw-btn { flex: 1; text-align: center; padding: 6px; cursor: pointer; font-size: 11px; font-weight: bold; border-radius: 5px; color: #666; transition: 0.3s; }
+        .sw-btn.active { background: #bc13fe; color: white; }
         hr { border:0; border-top:1px solid #333; margin:15px 0; }
     </style>
 </head>
 <body>
 
 <div id="panel">
-    <h2>Editor v11.8 🚀</h2>
+    <div class="lang-sw">
+        <div id="sw-ru" class="sw-btn active" onclick="setLang('ru')">РУССКИЙ</div>
+        <div id="sw-en" class="sw-btn" onclick="setLang('en')">ENGLISH</div>
+    </div>
+
+    <h2 id="ed-title">Editor v11.9 🌍</h2>
     
-    <label>Герой (URL/GIF):</label>
+    <label id="l-hero">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
     
-    <label style="color: #ff007f;">Размер героя:</label>
+    <label id="l-size">Размер героя:</label>
     <input type="range" id="h-size" min="30" max="400" value="130" oninput="draw()">
 
-    <label style="color: #00f7ff;">Смещение по Y:</label>
+    <label id="l-offset-y">Смещение по Y:</label>
     <input type="range" id="h-offset-y" min="0" max="150" value="85" oninput="draw()">
 
-    <label>Цвет платформы:</label>
+    <label id="l-pcol">Цвет платформы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
 
-    <label style="color: #ffea00;">Цвет текста задания:</label>
+    <label id="l-tcol">Цвет текста задания:</label>
     <input type="color" id="t-col" value="#ffffff" oninput="draw()">
 
-    <label style="color: #39ff14;">Время (сек):</label>
+    <label id="l-time">Время (сек):</label>
     <input type="number" id="g-time" value="60" oninput="draw()">
 
     <hr>
-    <label>Текст победы:</label>
+    <label id="l-win">Текст победы:</label>
     <input type="text" id="t-win" value="МИССИЯ ВЫПОЛНЕНА!" oninput="draw()">
     
     <div id="q-list"></div>
-    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
+    <button id="btn-copy" class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
 </div>
 
 <div id="view"><div id="f-box" class="win-view"></div></div>
 
 <script>
-    // 11 вопросов + старт + финиш = 13 платформ. Герой закончит на 13-й (последней).
+    let currentLang = 'ru';
+    const tr = {
+        ru: { title:"Редактор v11.9", hero:"Герой (URL):", size:"Размер:", offsetY:"Смещение Y:", pcol:"Цвет:", tcol:"Цвет текста:", time:"Время:", win:"Текст победы:", btn:"КОПИРОВАТЬ КОД", restart:"ЗАНОВО", score:"МОНЕТ:", timeout:"ВРЕМЯ ВЫШЛО!", alert:"Код скопирован!" },
+        en: { title:"Editor v11.9", hero:"Hero (URL):", size:"Hero Size:", offsetY:"Y Offset:", pcol:"Platform Color:", tcol:"Text Color:", time:"Time (sec):", win:"Win Text:", btn:"COPY CODE", restart:"RESTART", score:"COINS:", timeout:"TIME IS UP!", alert:"Code copied!" }
+    };
+
+    function setLang(lang) {
+        currentLang = lang;
+        document.getElementById('sw-ru').classList.toggle('active', lang === 'ru');
+        document.getElementById('sw-en').classList.toggle('active', lang === 'en');
+        const t = tr[lang];
+        document.getElementById('ed-title').innerText = t.title;
+        document.getElementById('l-hero').innerText = t.hero;
+        document.getElementById('l-size').innerText = t.size;
+        document.getElementById('l-offset-y').innerText = t.offsetY;
+        document.getElementById('l-pcol').innerText = t.pcol;
+        document.getElementById('l-tcol').innerText = t.tcol;
+        document.getElementById('l-time').innerText = t.time;
+        document.getElementById('l-win').innerText = t.win;
+        document.getElementById('btn-copy').innerText = t.btn;
+        draw();
+    }
+
     let qs = [
         {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
         {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
@@ -60,8 +90,7 @@
         {q:"Big?", a:["Малый","Большой","Средний"], c:1},
         {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
         {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0},
-        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1},
-        {q:"Victory?", a:["Поражение","Победа","Ничья"], c:1}
+        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1}
     ];
 
     function render() {
@@ -84,6 +113,7 @@
         const tCol = document.getElementById('t-col').value;
         const gameTime = document.getElementById('g-time').value;
         const winT = document.getElementById('t-win').value;
+        const t = tr[currentLang];
         const data = JSON.stringify(qs);
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
@@ -100,7 +130,7 @@
         </style></head><body>
         <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b" style="color:#ffcc00">💰 <span id="coins">0</span></div><div class="b" id="timer" style="color:#39ff14">⏳ ${gameTime}</div></div>
         <div id="q"><div id="qt"></div><div id="as"></div></div>
-        <div id="final"><h2 style="color:${col};" id="f-title"></h2><div id="f-score"></div><button class="bt" onclick="location.reload()">ЗАНОВО</button></div>
+        <div id="final"><h2 style="color:${col};" id="f-title"></h2><div id="f-score"></div><button class="bt" onclick="location.reload()">${t.restart}</button></div>
         <canvas id="c"></canvas>
         <script>
         const img=new Image(); img.src="${hero}";
@@ -109,7 +139,6 @@
         const pW=60, pH=30, pD=15;
         let cur=0, liv=3, jT=1, sP={x:0,y:0}, tP={x:0,y:0}, isWin=false, isDead=false, winAn=0, jumpCount=0, fallY=0, deadAn=0, coins=0, timeLeft=${gameTime}, timerId;
 
-        // ВЕРНУЛИ ЗВУКИ ИЗ v10.1
         let audioCtx;
         function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === "suspended") audioCtx.resume(); }
         function playSound(type) {
@@ -120,7 +149,7 @@
             osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + (type==="fail"?0.5:0.1));
         }
 
-        function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "ВРЕМЯ ВЫШЛО!"); },1000); }
+        function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "${t.timeout}"); },1000); }
         function shadeColor(c, p) {
             var f=parseInt(c.slice(1),16),t=p<0?0:255,r=f>>16,g=f>>8&0xff,b=f&0xff;
             return "#"+(0x1000000+(Math.round((t-r)*Math.abs(p)+r))*0x10000+(Math.round((t-g)*Math.abs(p)+g))*0x100+(Math.round((t-b)*Math.abs(p)+b))).toString(16).slice(1);
@@ -160,7 +189,7 @@
             } else if(isWin && jumpCount < 3) {
                 winAn += 0.12; jO = Math.abs(Math.sin(winAn)) * 50;
                 if(winAn >= Math.PI) { winAn = 0; jumpCount++; playSound("jump");
-                    if(jumpCount >= 3) { document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText="${winT}"; document.getElementById("f-score").innerHTML = "<h3>МОНЕТ: "+coins+"</h3>"; }
+                    if(jumpCount >= 3) { document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText="${winT}"; document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>"; }
                 }
             }
             if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
@@ -182,7 +211,7 @@
         }
 
         function showF(win, msg){ 
-            clearInterval(timerId); if(!win) { isDead=true; playSound("fail"); document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=msg || "ИГРА ОКОНЧЕНА"; document.getElementById("f-score").innerHTML = "<h3>МОНЕТ: "+coins+"</h3>"; }
+            clearInterval(timerId); if(!win) { isDead=true; playSound("fail"); document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=msg || "ИГРА ОКОНЧЕНА"; document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>"; }
         }
         uQ(); u(); startTimer();
         <\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
@@ -192,7 +221,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v11.8 скопирован!");
+        document.body.removeChild(el); alert(tr[currentLang].alert);
     }
     render(); draw();
 </script>
