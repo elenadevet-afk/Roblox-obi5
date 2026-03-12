@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.1 - Multilingual</title>
+    <title>Genially Builder v10.1 - Multilingual Final</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -12,8 +12,6 @@
         #view { flex-grow: 1; padding: 20px; background: #050505; display: flex; flex-direction: column; }
         .win-view { flex-grow: 1; border: 2px solid #333; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
         .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
-        .btn-copy:hover { background: #9b0fd1; transform: scale(1.02); }
-        /* Стили для переключателя языков */
         .lang-tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #000; padding: 5px; border-radius: 8px; }
         .lang-btn { flex: 1; padding: 6px; text-align: center; cursor: pointer; font-size: 11px; font-weight: bold; border-radius: 4px; color: #666; transition: 0.3s; }
         .lang-btn.active { background: #bc13fe; color: white; }
@@ -74,7 +72,9 @@
             btn: "КОПИРОВАТЬ КОД ДЛЯ GENIALLY",
             alert: "Код v10.1 скопирован!",
             restart: "ЗАНОВО",
-            score: "МОНЕТ"
+            score: "МОНЕТ",
+            gameOver: "ИГРА ОКОНЧЕНА",
+            timeOut: "ВРЕМЯ ВЫШЛО!"
         },
         en: {
             title: "Editor v10.1 💰🧱⏳",
@@ -88,7 +88,9 @@
             btn: "COPY CODE FOR GENIALLY",
             alert: "Code v10.1 copied!",
             restart: "RESTART",
-            score: "COINS"
+            score: "COINS",
+            gameOver: "GAME OVER",
+            timeOut: "TIME IS UP!"
         }
     };
 
@@ -96,7 +98,6 @@
         currentLang = lang;
         document.getElementById('tab-ru').classList.toggle('active', lang === 'ru');
         document.getElementById('tab-en').classList.toggle('active', lang === 'en');
-        
         const s = uiStrings[lang];
         document.getElementById('ui-title').innerText = s.title;
         document.getElementById('ui-hero-label').innerText = s.hero;
@@ -187,7 +188,7 @@
             osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + (type==="fail"?0.5:0.1));
         }
 
-        function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "ВРЕМЯ ВЫШЛО!"); },1000); }
+        function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "${s.timeOut}"); },1000); }
 
         function shadeColor(color, percent) {
             var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
@@ -240,7 +241,7 @@
         function showF(win, msg){ 
             clearInterval(timerId); isWin=win; if(!win) isDead=true; 
             document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; 
-            document.getElementById("f-title").innerText=msg || (win?"${winT}":"ИГРА ОКОНЧЕНА");
+            document.getElementById("f-title").innerText=msg || (win?"${winT}":"${s.gameOver}");
             document.getElementById("f-score").innerHTML = "<h3>${s.score}: "+coins+"</h3>";
             if(!win) playSound("fail");
         }
