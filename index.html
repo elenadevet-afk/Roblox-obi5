@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v9.0 - Victory Sound</title>
+    <title>Genially Builder v9.1 - Fake 3D Text</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -18,7 +18,7 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v9.0 🏆🎶</h2>
+    <h2>Editor v9.1 🎨🕶️</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -99,7 +99,28 @@
         .bt{background:rgba(0,0,0,0.7);border:1px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
         .bt:hover{background:${col};color:#000}
         h2{margin:0 0 5px 0; color:${col}; font-size:20px; text-shadow: 0 0 15px ${col}; line-height:1.2}
-        #qt{font-size:22px; margin-bottom:20px; color:${txtCol}; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); font-weight:bold;}
+        
+        /* НОВЫЙ СТИЛЬ ТЕКСТА ЗАДАНИЯ С "ФЕЙКОВЫМ 3D" */
+        #qt{
+            font-size:32px; /* Увеличил размер для пущего эффекта */
+            margin-bottom:20px; 
+            color:${txtCol}; 
+            font-weight:bold;
+            /* Создаем многослойную тень для эффекта объема */
+            text-shadow: 
+                0 1px 0 #ccc,
+                0 2px 0 #c9c9c9,
+                0 3px 0 #bbb,
+                0 4px 0 #b9b9b9,
+                0 5px 0 #aaa,
+                0 6px 1px rgba(0,0,0,.1),
+                0 0 5px rgba(0,0,0,.1),
+                0 1px 3px rgba(0,0,0,.3),
+                0 3px 5px rgba(0,0,0,.2),
+                0 5px 10px rgba(0,0,0,.25),
+                0 10px 10px rgba(0,0,0,.2),
+                0 20px 20px rgba(0,0,0,.15);
+        }
         </style></head><body>
         <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b">ШАГ: <span id="stn">1</span>/12</div></div>
         <div id="q"><div id="qt"></div><div id="as"></div></div>
@@ -135,7 +156,7 @@
 
         function playWinSound() {
             initAudio();
-            const notes = [523.25, 659.25, 783.99, 1046.50]; // Ноты До, Ми, Соль, До следующей октавы
+            const notes = [523.25, 659.25, 783.99, 1046.50]; 
             notes.forEach((freq, i) => {
                 const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
                 osc.type = "triangle"; osc.frequency.setValueAtTime(freq, audioCtx.currentTime + i * 0.1);
@@ -171,17 +192,7 @@
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
             let jO = Math.sin(jT*Math.PI)*50;
-            
-            if(isWin && jumpCount < 3) { 
-                winAn += 0.15; 
-                jO = Math.abs(Math.sin(winAn))*40; 
-                if(winAn >= Math.PI) { 
-                    winAn -= Math.PI; 
-                    jumpCount++; 
-                    playWinSound(); // Звук на каждый победный прыжок!
-                } 
-            }
-            
+            if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; playWinSound(); } }
             if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
             if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}}
             if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2 + hXOffset, hP.y - hSize - jO + hOffset, hSize, hSize);
@@ -207,7 +218,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v9.0 с победным звуком скопирован!");
+        document.body.removeChild(el); alert("Код v9.1 с эффектом 3D текста скопирован!");
     }
     render(); draw();
 </script>
