@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Game Builder v7.4 Final</title>
+    <title>Genially Game Builder v7.6 - Custom Size</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -19,17 +19,14 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v7.4 🏆</h2>
+    <h2>Editor v7.6 📏</h2>
     
-    <label>Язык UI:</label>
-    <select id="g-lang" onchange="draw()">
-        <option value="ru">Русский</option>
-        <option value="en">English</option>
-    </select>
-
-    <label>Герой (GIF или PNG URL):</label>
+    <label>Герой (URL):</label>
     <input type="text" id="h-url" value="https://cdn-icons-png.flaticon.com/512/616/616430.png" oninput="draw()">
     
+    <label>Размер героя (px):</label>
+    <input type="range" id="h-size" min="30" max="120" value="60" oninput="draw()">
+
     <label>Цвет темы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
 
@@ -37,12 +34,8 @@
     <label>Текст при ПОБЕДЕ:</label>
     <input type="text" id="t-win" value="ВЕЛИКОЛЕПНО!" oninput="draw()">
     
-    <label>Текст при ПРОИГРЫШЕ:</label>
-    <input type="text" id="t-lose" value="ПОПРОБУЙ ЕЩЕ РАЗ" oninput="draw()">
-    <hr>
-
     <div id="q-list"></div>
-    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ ДЛЯ GENIALLY</button>
+    <button class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД</button>
 </div>
 
 <div id="view">
@@ -66,15 +59,12 @@
     ];
 
     function render() {
-        const c = document.getElementById('q-list');
-        c.innerHTML = '';
+        const c = document.getElementById('q-list'); c.innerHTML = '';
         qs.forEach((q, i) => {
             const d = document.createElement('div'); d.className = 'card';
             d.innerHTML = `<strong>${i+1}</strong> <input type="text" value="${q.q}" oninput="qs[${i}].q=this.value;draw()">
             <div style="display:flex;gap:4px">
-                <input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()">
-                <input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()">
-                <input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()">
+                <input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()"><input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()"><input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()">
             </div>`;
             c.appendChild(d);
         });
@@ -82,16 +72,11 @@
 
     function getCode() {
         const hero = document.getElementById('h-url').value;
+        const hSize = document.getElementById('h-size').value;
         const col = document.getElementById('h-col').value;
-        const lang = document.getElementById('g-lang').value;
         const winT = document.getElementById('t-win').value;
-        const loseT = document.getElementById('t-lose').value;
+        const loseT = document.getElementById('t-lose')?.value || "ПОПРОБУЙ ЕЩЕ РАЗ";
         const data = JSON.stringify(qs);
-
-        const labels = {
-            ru: { step: "ШАГ", retry: "ИГРАТЬ СНОВА" },
-            en: { step: "STEP", retry: "PLAY AGAIN" }
-        }[lang];
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
         body,html{margin:0;padding:0;overflow:hidden;background:transparent;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
@@ -99,21 +84,21 @@
         #ui{position:absolute;top:15px;left:15px;z-index:10;display:flex;gap:8px}
         .b{background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold}
         #q, #final{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:320px;text-align:center;display:none;z-index:20}
-        .bt{background:rgba(0,0,0,0.7);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px;box-shadow: 0 0 15px ${col}33}
-        .bt:hover{background:${col};color:#000;box-shadow: 0 0 25px ${col}aa}
+        .bt{background:rgba(0,0,0,0.7);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
+        .bt:hover{background:${col};color:#000}
         h2{margin:0 0 15px 0; color:${col}; font-size:28px; text-shadow: 0 0 20px ${col}}
         #qt{font-size:22px; margin-bottom:20px; text-shadow: 2px 2px 10px #000}
         </style></head><body>
-        <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b" id="st">${labels.step}: 1/12</div></div>
+        <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b">ШАГ: <span id="stn">1</span>/12</div></div>
         <div id="q"><div id="qt"></div><div id="as"></div></div>
-        <div id="final"><h2 id="f-title"></h2><button class="bt" onclick="location.reload()">${labels.retry}</button></div>
+        <div id="final"><h2 id="f-title"></h2><button class="bt" onclick="location.reload()">ИГРАТЬ СНОВА</button></div>
         <canvas id="c"></canvas>
         <script>
         const img=new Image();img.src="${hero}";
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
-        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,winAn=0;
+        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,winAn=0,jumpCount=0;
         const ctxA = new (window.AudioContext || window.webkitAudioContext)();
-        function playWin() { const notes = [523, 659, 783, 1046]; notes.forEach((f, i) => { const osc = ctxA.createOscillator(); const g = ctxA.createGain(); osc.frequency.value = f; g.gain.setValueAtTime(0.1, ctxA.currentTime + i*0.15); g.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime + i*0.15 + 0.6); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime + i*0.15); osc.stop(ctxA.currentTime + i*0.15 + 0.6); }); }
+        function playWin() { const notes=[523,659,783,1046]; notes.forEach((f,i)=>{const osc=ctxA.createOscillator(),g=ctxA.createGain(); osc.frequency.value=f; g.gain.setValueAtTime(0.1,ctxA.currentTime+i*0.15); g.gain.exponentialRampToValueAtTime(0.0001,ctxA.currentTime+i*0.15+0.6); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime+i*0.15); osc.stop(ctxA.currentTime+i*0.15+0.6);});}
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
         window.onresize=rs;rs();
         const pls=[];for(let i=0;i<13;i++){pls.push({x:40+(i*65),y:cvs.height-80-(i*35)})}
@@ -123,13 +108,16 @@
             ctx.clearRect(0,0,cvs.width,cvs.height);
             pls.forEach((p,i)=>dP(p.x,p.y,i<=cur));
             let jO = Math.sin(jT*Math.PI)*50;
-            if(isWin) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*35; }
-            if(jT<1){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){ jT=1; if(cur<12) uQ(); else showF(true); } }
-            if(img.complete) ctx.drawImage(img,hP.x,hP.y-jO-60,55,65);
+            if(isWin && jumpCount < 23) { 
+                winAn += 0.15; jO = Math.abs(Math.sin(winAn))*35; 
+                if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; }
+            } else if(isWin && jumpCount >= 23) { jO = 0; }
+            if(jT<1){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}}
+            if(img.complete) ctx.drawImage(img,hP.x,hP.y-jO-${hSize},${hSize},${hSize});
             requestAnimationFrame(u);
         }
         function uQ(){
-            document.getElementById("st").innerText="${labels.step}: "+(cur+1)+"/12";
+            document.getElementById("stn").innerText=(cur+1);
             document.getElementById("q").style.display="block";
             document.getElementById("qt").innerText=tasks[cur].q;
             const b=document.getElementById("as"); b.innerHTML="";
@@ -159,7 +147,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код (v7.4) скопирован!");
+        document.body.removeChild(el); alert("Код v7.6 (с настройкой размера) скопирован!");
     }
     render(); draw();
 </script>
