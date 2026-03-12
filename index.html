@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v8.4 - Fixed Visibility</title>
+    <title>Genially Builder v8.4 - Fresh Start</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -97,12 +97,11 @@
         <canvas id="c"></canvas>
         <script>
         const img=new Image(); 
-        img.onload = () => { console.log("Hero Loaded"); };
         img.src="${hero}";
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
         const hSize = ${hSize}, hOffset = ${hOffset}, hXOffset = ${hXOffset};
         const pW = 56, pH = 28; 
-        let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isLose=false,fallY=0,winAn=0,jumpCount=0;
+        let cur=0,liv=3,jT=1,isWin=false,isLose=false,fallY=0,winAn=0,jumpCount=0;
         const ctxA = new (window.AudioContext || window.webkitAudioContext)();
 
         function playWin() { [523,659,783,1046].forEach((f,i)=>{const osc=ctxA.createOscillator(),g=ctxA.createGain(); osc.frequency.value=f; g.gain.setValueAtTime(0.1,ctxA.currentTime+i*0.15); g.gain.exponentialRampToValueAtTime(0.0001,ctxA.currentTime+i*0.15+0.6); osc.connect(g); g.connect(ctxA.destination); osc.start(ctxA.currentTime+i*0.15); osc.stop(ctxA.currentTime+i*0.15+0.6);});}
@@ -124,7 +123,6 @@
             for(let i=0;i<13;i++){
                 pls.push({x:40+(i*65),y:cvs.height-80-(i*35)});
             }
-            if(jT>=1 && !isLose) { hP.x=pls[cur].x; hP.y=pls[cur].y; }
         }
         window.onresize=rs; rs();
         let hP={x:pls[0].x,y:pls[0].y};
@@ -148,6 +146,8 @@
                 if(jT<1){ 
                     jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; 
                     if(jT>=1){jT=1; if(cur<12) uQ(); else showF(true);}
+                } else {
+                    hP.x = pls[cur].x; hP.y = pls[cur].y;
                 }
             } else {
                 fallY += 10;
@@ -174,7 +174,7 @@
                         sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0;
                     } else {
                         liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv));
-                        if(liv<=0) { isLose=true; playFall(); document.getElementById("q").style.display="none"; }
+                        if(liv<=0 && !isLose) { isLose=true; playFall(); document.getElementById("q").style.display="none"; }
                     }
                 }; b.appendChild(btn);
             });
@@ -193,7 +193,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v8.4 исправлен и скопирован!");
+        document.body.removeChild(el); alert("Код v8.4 скопирован для нового чата!");
     }
     render(); draw();
 </script>
