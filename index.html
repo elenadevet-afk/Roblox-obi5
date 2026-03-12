@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.2 - Precision Control</title>
+    <title>Genially Builder v11.3 - 12 Platforms</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -26,7 +26,7 @@
         <div id="sw-en" class="ed-sw" onclick="setEditorLang('en')">ENGLISH</div>
     </div>
 
-    <h2 id="ed-title">Editor v11.2 🛠️</h2>
+    <h2 id="ed-title">Editor v11.3 🧱</h2>
     
     <label id="l-hero">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -59,8 +59,8 @@
 <script>
     let currentLang = 'ru';
     const translations = {
-        ru: { title:"Редактор v11.2", hero:"Герой (URL):", size:"Размер:", offsetY:"Смещение Y:", offsetX:"Смещение X:", pcol:"Цвет:", time:"Время:", win:"Победа:", btn:"КОПИРОВАТЬ КОД", restart:"ЗАНОВО", score:"МОНЕТ:", timeout:"ВРЕМЯ ВЫШЛО!", alert:"Код скопирован!" },
-        en: { title:"Editor v11.2", hero:"Hero (URL):", size:"Size:", offsetY:"Y Offset:", offsetX:"X Offset:", pcol:"Color:", time:"Time:", win:"Victory:", btn:"COPY CODE", restart:"RESTART", score:"COINS:", timeout:"TIME IS UP!", alert:"Code copied!" }
+        ru: { title:"Редактор v11.3", hero:"Герой (URL):", size:"Размер:", offsetY:"Смещение Y:", offsetX:"Смещение X:", pcol:"Цвет:", time:"Время:", win:"Победа:", btn:"КОПИРОВАТЬ КОД", restart:"ЗАНОВО", score:"МОНЕТ:", timeout:"ВРЕМЯ ВЫШЛО!", alert:"Код v11.3 скопирован!" },
+        en: { title:"Editor v11.3", hero:"Hero (URL):", size:"Size:", offsetY:"Y Offset:", offsetX:"X Offset:", pcol:"Color:", time:"Time:", win:"Victory:", btn:"COPY CODE", restart:"RESTART", score:"COINS:", timeout:"TIME IS UP!", alert:"Code v11.3 copied!" }
     };
 
     function setEditorLang(lang) {
@@ -80,6 +80,7 @@
         draw();
     }
 
+    // Список из 10 вопросов (даст 10 прыжков + старт + финиш = 12 платформ)
     let qs = [
         {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
         {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
@@ -90,9 +91,7 @@
         {q:"Big?", a:["Малый","Большой","Средний"], c:1},
         {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
         {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0},
-        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1},
-        {q:"Jump?", a:["Бег","Прыжок","Сон"], c:1},
-        {q:"Book?", a:["Книга","Ручка","Лист"], c:0}
+        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1}
     ];
 
     function render() {
@@ -193,7 +192,7 @@
         function showF(win, msg){ 
             clearInterval(timerId); isWin=win; if(!win) isDead=true; 
             document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; 
-            document.getElementById("f-title").innerText=msg || (win?"${winT}":"GAME OVER");
+            document.getElementById("f-title").innerText=msg || (win?"${winT}":"ИГРА ОКОНЧЕНА");
             document.getElementById("f-score").innerHTML = "<h3>${t.score} "+coins+"</h3>";
             if(!win) playSound("fail");
         }
