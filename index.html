@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v8.4 - Corner UI</title>
+    <title>Genially Builder v8.5 - Ghost UI</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -18,7 +18,7 @@
 <body>
 
 <div id="panel">
-    <h2>Editor v8.4 📐📍</h2>
+    <h2>Editor v8.5 👻✨</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -32,7 +32,7 @@
     <label style="color: #39ff14;">Смещение по X:</label>
     <input type="range" id="h-x-offset" min="-100" max="100" value="0" oninput="draw()">
 
-    <label>Цвет платформы:</label>
+    <label>Цвет темы/платформ:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
 
     <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
@@ -88,20 +88,20 @@
         body,html{margin:0;padding:0;overflow:hidden;background:transparent;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
         canvas{display:block}
         #ui{position:absolute;top:15px;left:15px;z-index:10;display:flex;gap:8px}
-        .b{background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold}
+        .b{background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold}
         #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:340px;text-align:center;display:none;z-index:20}
         
-        /* НОВОЕ ПОЛОЖЕНИЕ ФИНАЛЬНОГО ОКНА */
-        #final{position:absolute; top:70px; left:15px; width:280px; text-align:left; display:none; z-index:30; background:rgba(0,0,0,0.8); padding:20px; border-radius:15px; border:2px solid ${col}; backdrop-filter:blur(10px);}
+        /* ПОЛНОСТЬЮ ПРОЗРАЧНОЕ ФИНАЛЬНОЕ ОКНО */
+        #final{position:absolute; top:75px; left:15px; width:250px; text-align:left; display:none; z-index:30;}
         
-        .bt{background:rgba(0,0,0,0.8);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
+        .bt{background:rgba(0,0,0,0.7);border:1px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
         .bt:hover{background:${col};color:#000}
-        h2{margin:0 0 10px 0; color:${col}; font-size:22px; text-shadow: 0 0 20px ${col}}
+        h2{margin:0 0 5px 0; color:${col}; font-size:20px; text-shadow: 0 0 15px ${col}; line-height:1.2}
         #qt{font-size:22px; margin-bottom:20px; text-shadow: 2px 2px 10px #000}
         </style></head><body>
         <div id="ui"><div class="b" id="hp">❤️ ❤️ ❤️</div><div class="b">ШАГ: <span id="stn">1</span>/12</div></div>
         <div id="q"><div id="qt"></div><div id="as"></div></div>
-        <div id="final"><h2 id="f-title"></h2><button class="bt" style="padding:8px; font-size:12px;" onclick="location.reload()">ИГРАТЬ СНОВА</button></div>
+        <div id="final"><h2 id="f-title"></h2><button class="bt" style="padding:6px 12px; width:auto; font-size:11px; margin:0;" onclick="location.reload()">ИГРАТЬ СНОВА</button></div>
         <canvas id="c"></canvas>
         <script>
         const img=new Image();img.src="${hero}";
@@ -170,7 +170,7 @@
     function copyIt() {
         const el = document.createElement('textarea'); el.value = getCode();
         document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert("Код v8.4 (Corner UI) скопирован!");
+        document.body.removeChild(el); alert("Код v8.5 (Ghost UI) скопирован!");
     }
     render(); draw();
 </script>
