@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.4 - Compact Style</title>
+    <title>Genially Builder v10.5 - Shuffle Edition</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -25,7 +26,7 @@
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
     
-    <h2 id="ui-title">Editor v10.4 🤏✨</h2>
+    <h2 id="ui-title">Editor v10.5 🔀</h2>
     
     <label id="ui-hero-label">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -61,7 +62,7 @@
     let currentLang = 'ru';
     const uiStrings = {
         ru: {
-            title: "Editor v10.4 🤏✨",
+            title: "Editor v10.5 🔀",
             hero: "Герой (URL/GIF):",
             size: "Размер человечка:",
             offset: "Компенсация по Y:",
@@ -70,14 +71,14 @@
             time: "Время на игру (сек):",
             win: "Победный текст:",
             btn: "КОПИРОВАТЬ КОД ДЛЯ GENIALLY",
-            alert: "Код v10.4 скопирован!",
+            alert: "Код v10.5 скопирован!",
             restart: "ЗАНОВО",
             score: "МОНЕТ",
             gameOver: "ИГРА ОКОНЧЕНА",
             timeOut: "ВРЕМЯ ВЫШЛО!"
         },
         en: {
-            title: "Editor v10.4 🤏✨",
+            title: "Editor v10.5 🔀",
             hero: "Hero (URL/GIF):",
             size: "Character Size:",
             offset: "Y Compensation:",
@@ -86,7 +87,7 @@
             time: "Game Time (sec):",
             win: "Victory Text:",
             btn: "COPY CODE FOR GENIALLY",
-            alert: "Code v10.4 copied!",
+            alert: "Code v10.5 copied!",
             restart: "RESTART",
             score: "COINS",
             gameOver: "GAME OVER",
@@ -171,7 +172,11 @@
         <canvas id="c"></canvas>
         <script>
         const img=new Image();img.src="${hero}";
-        const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
+        const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),rawTasks=${data};
+        
+        // --- ПЕРЕМЕШИВАНИЕ ВОПРОСОВ ---
+        const tasks = [...rawTasks].sort(() => Math.random() - 0.5);
+
         const hSize=${hSize}, hOffset=${hOffset}, pCol="${col}";
         const pW = 65, pH = 30, pDepth = 15; 
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0,deadAn=0;
@@ -198,8 +203,7 @@
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
         window.onresize=rs;rs();
         
-        const stepX = 85; 
-        const stepY = 15; 
+        const stepX = 85, stepY = 15; 
         const pls=[];for(let i=0;i<13;i++){
             pls.push({x:40+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0})
         }
@@ -226,18 +230,24 @@
             let jO = Math.sin(jT*Math.PI)*50;
             if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
             if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
-            if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playSound("coin"); } if(cur<12) uQ(); else showF(true);}}
+            if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playSound("coin"); } if(cur<tasks.length) uQ(); else showF(true);}}
             if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2, hP.y - hSize - jO + hOffset, hSize, hSize);
             requestAnimationFrame(u);
         }
 
         function uQ(){ 
-            document.getElementById("q").style.display="block"; document.getElementById("qt").innerText=tasks[cur].q; 
+            document.getElementById("q").style.display="block"; 
+            document.getElementById("qt").innerText=tasks[cur].q; 
             const b=document.getElementById("as"); b.innerHTML=""; 
-            tasks[cur].a.forEach((t,i)=>{ 
-                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=t; 
+            
+            // Копируем варианты ответов и мешаем их тоже для честности
+            let ans = tasks[cur].a.map((v, i) => ({v, isCorrect: i === tasks[cur].c}));
+            ans.sort(() => Math.random() - 0.5);
+
+            ans.forEach((a)=>{ 
+                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=a.v; 
                 btn.onclick=()=>{ 
-                    if(i===tasks[cur].c){ playSound("jump"); document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; 
+                    if(a.isCorrect){ playSound("jump"); document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; 
                     } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); } 
                 }; b.appendChild(btn); 
             }); 
