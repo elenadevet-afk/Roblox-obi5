@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.2 - Fixed Hero</title>
+    <title>Genially Builder v10.3 - Low Angle</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -25,7 +25,7 @@
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
     
-    <h2 id="ui-title">Editor v10.2 💰🐘</h2>
+    <h2 id="ui-title">Editor v10.3 📏📐</h2>
     
     <label id="ui-hero-label">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -61,7 +61,7 @@
     let currentLang = 'ru';
     const uiStrings = {
         ru: {
-            title: "Editor v10.2 💰🐘🧱",
+            title: "Editor v10.3 📏📐",
             hero: "Герой (URL/GIF):",
             size: "Размер человечка:",
             offset: "Компенсация по Y:",
@@ -70,14 +70,14 @@
             time: "Время на игру (сек):",
             win: "Победный текст:",
             btn: "КОПИРОВАТЬ КОД ДЛЯ GENIALLY",
-            alert: "Код v10.2 скопирован!",
+            alert: "Код v10.3 скопирован!",
             restart: "ЗАНОВО",
             score: "МОНЕТ",
             gameOver: "ИГРА ОКОНЧЕНА",
             timeOut: "ВРЕМЯ ВЫШЛО!"
         },
         en: {
-            title: "Editor v10.2 💰🐘🧱",
+            title: "Editor v10.3 📏📐",
             hero: "Hero (URL/GIF):",
             size: "Character Size:",
             offset: "Y Compensation:",
@@ -86,7 +86,7 @@
             time: "Game Time (sec):",
             win: "Victory Text:",
             btn: "COPY CODE FOR GENIALLY",
-            alert: "Code v10.2 copied!",
+            alert: "Code v10.3 copied!",
             restart: "RESTART",
             score: "COINS",
             gameOver: "GAME OVER",
@@ -177,16 +177,15 @@
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0,deadAn=0;
         let coins=0, timeLeft=${gameTime}, timerId;
 
-        let audioCtx;
-        function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === "suspended") audioCtx.resume(); }
+        function initAudio() { if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (window.audioCtx.state === "suspended") window.audioCtx.resume(); }
 
         function playSound(type) {
-            initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            if(type==="jump"){ osc.type="sine"; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.3, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);}
-            if(type==="coin"){ osc.type="sine"; osc.frequency.setValueAtTime(800, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05); gain.gain.setValueAtTime(0.05, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);}
-            if(type==="fail"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(200, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);}
-            if(type==="win"){ osc.type="triangle"; const notes = [523, 659, 783, 1046]; notes.forEach((f, i) => { osc.frequency.setValueAtTime(f, audioCtx.currentTime + i * 0.1); }); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6); }
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.7);
+            initAudio(); const osc = window.audioCtx.createOscillator(); const gain = window.audioCtx.createGain();
+            if(type==="jump"){ osc.type="sine"; osc.frequency.setValueAtTime(400, window.audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(10, window.audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.3, window.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.1);}
+            if(type==="coin"){ osc.type="sine"; osc.frequency.setValueAtTime(800, window.audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, window.audioCtx.currentTime + 0.05); gain.gain.setValueAtTime(0.05, window.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.1);}
+            if(type==="fail"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(200, window.audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, window.audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.1, window.audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.4);}
+            if(type==="win"){ osc.type="triangle"; const notes = [523, 659, 783, 1046]; notes.forEach((f, i) => { osc.frequency.setValueAtTime(f, window.audioCtx.currentTime + i * 0.1); }); gain.gain.setValueAtTime(0.1, window.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.6); }
+            osc.connect(gain); gain.connect(window.audioCtx.destination); osc.start(); osc.stop(window.audioCtx.currentTime + 0.7);
         }
 
         function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "${s.timeOut}"); },1000); }
@@ -198,7 +197,13 @@
 
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
         window.onresize=rs;rs();
-        const pls=[];for(let i=0;i<13;i++){pls.push({x:50+(i*80),y:cvs.height-120-(i*45), hasCoin: i>0})}
+        
+        // --- ИЗМЕНЕННЫЕ НАСТРОЙКИ УГЛА ---
+        const stepX = 95; // Больше расстояние вширь
+        const stepY = 15; // Совсем маленький подъем вверх
+        const pls=[];for(let i=0;i<13;i++){
+            pls.push({x:30+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0})
+        }
         let hP={x:pls[0].x,y:pls[0].y};
 
         function dP(x,y,active,i){
