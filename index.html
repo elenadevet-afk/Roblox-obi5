@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.5 - Shuffle Edition</title>
+    <title>Genially Builder v10.6 - Shield Edition</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -26,7 +25,7 @@
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
     
-    <h2 id="ui-title">Editor v10.5 🔀</h2>
+    <h2 id="ui-title">Editor v10.6 🛡️</h2>
     
     <label id="ui-hero-label">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -62,7 +61,7 @@
     let currentLang = 'ru';
     const uiStrings = {
         ru: {
-            title: "Editor v10.5 🔀",
+            title: "Editor v10.6 🛡️",
             hero: "Герой (URL/GIF):",
             size: "Размер человечка:",
             offset: "Компенсация по Y:",
@@ -71,14 +70,15 @@
             time: "Время на игру (сек):",
             win: "Победный текст:",
             btn: "КОПИРОВАТЬ КОД ДЛЯ GENIALLY",
-            alert: "Код v10.5 скопирован!",
+            alert: "Код v10.6 скопирован!",
             restart: "ЗАНОВО",
             score: "МОНЕТ",
             gameOver: "ИГРА ОКОНЧЕНА",
-            timeOut: "ВРЕМЯ ВЫШЛО!"
+            timeOut: "ВРЕМЯ ВЫШЛО!",
+            shield: "ЩИТ АКТИВЕН"
         },
         en: {
-            title: "Editor v10.5 🔀",
+            title: "Editor v10.6 🛡️",
             hero: "Hero (URL/GIF):",
             size: "Character Size:",
             offset: "Y Compensation:",
@@ -87,11 +87,12 @@
             time: "Game Time (sec):",
             win: "Victory Text:",
             btn: "COPY CODE FOR GENIALLY",
-            alert: "Code v10.5 copied!",
+            alert: "Code v10.6 copied!",
             restart: "RESTART",
             score: "COINS",
             gameOver: "GAME OVER",
-            timeOut: "TIME IS UP!"
+            timeOut: "TIME IS UP!",
+            shield: "SHIELD ACTIVE"
         }
     };
 
@@ -161,9 +162,11 @@
         .bt{background:rgba(0,0,0,0.7);border:1px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
         .bt:hover{background:${col};color:#000}
         #qt{font-size:32px; margin-bottom:20px; color:${txtCol}; font-weight:bold; text-shadow: 0 4px 0 #000, 0 8px 10px rgba(0,0,0,0.5);}
+        #shield-indicator{display:none; color:#00f7ff; text-shadow: 0 0 10px #00f7ff;}
         </style></head><body>
         <div id="ui">
             <div class="b" id="hp">❤️ ❤️ ❤️</div>
+            <div class="b" id="shield-indicator">🛡️ ${s.shield}</div>
             <div class="b" style="color:#ffcc00">💰 <span id="coins">0</span></div>
             <div class="b" id="timer" style="color:#39ff14">⏳ ${gameTime}</div>
         </div>
@@ -173,14 +176,12 @@
         <script>
         const img=new Image();img.src="${hero}";
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),rawTasks=${data};
-        
-        // --- ПЕРЕМЕШИВАНИЕ ВОПРОСОВ ---
         const tasks = [...rawTasks].sort(() => Math.random() - 0.5);
 
         const hSize=${hSize}, hOffset=${hOffset}, pCol="${col}";
         const pW = 65, pH = 30, pDepth = 15; 
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0,deadAn=0;
-        let coins=0, timeLeft=${gameTime}, timerId;
+        let coins=0, timeLeft=${gameTime}, timerId, hasShield=false;
 
         function initAudio() { if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (window.audioCtx.state === "suspended") window.audioCtx.resume(); }
 
@@ -188,6 +189,7 @@
             initAudio(); const osc = window.audioCtx.createOscillator(); const gain = window.audioCtx.createGain();
             if(type==="jump"){ osc.type="sine"; osc.frequency.setValueAtTime(400, window.audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(10, window.audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.3, window.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.1);}
             if(type==="coin"){ osc.type="sine"; osc.frequency.setValueAtTime(800, window.audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, window.audioCtx.currentTime + 0.05); gain.gain.setValueAtTime(0.05, window.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.1);}
+            if(type==="shield"){ osc.type="square"; osc.frequency.setValueAtTime(600, window.audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1000, window.audioCtx.currentTime + 0.2); gain.gain.setValueAtTime(0.1, window.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.2);}
             if(type==="fail"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(200, window.audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, window.audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.1, window.audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.4);}
             if(type==="win"){ osc.type="triangle"; const notes = [523, 659, 783, 1046]; notes.forEach((f, i) => { osc.frequency.setValueAtTime(f, window.audioCtx.currentTime + i * 0.1); }); gain.gain.setValueAtTime(0.1, window.audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.6); }
             osc.connect(gain); gain.connect(window.audioCtx.destination); osc.start(); osc.stop(window.audioCtx.currentTime + 0.7);
@@ -205,7 +207,7 @@
         
         const stepX = 85, stepY = 15; 
         const pls=[];for(let i=0;i<13;i++){
-            pls.push({x:40+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0})
+            pls.push({x:40+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0, hasShield: (i===4 || i===8)})
         }
         let hP={x:pls[0].x,y:pls[0].y};
 
@@ -217,9 +219,14 @@
             ctx.fillStyle = sideC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, pDepth); ctx.lineTo(pW/2, pH/2 + pDepth); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
             ctx.fillStyle = frontC; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW, pDepth); ctx.lineTo(pW/2, pH/2 + pDepth); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
             ctx.fillStyle = topC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2, -pH/2); ctx.lineTo(pW, 0); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
-            if(pls[i].hasCoin && i > cur){
-                ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -45 + Math.sin(Date.now()/200)*5, 7, 0, Math.PI*2); ctx.fill();
-                ctx.strokeStyle = "#fff"; ctx.lineWidth=2; ctx.stroke();
+            
+            if(i > cur){
+                if(pls[i].hasShield){
+                   ctx.fillStyle = "#00f7ff"; ctx.font = "20px serif"; ctx.fillText("🛡️", pW/2 - 10, -40 + Math.sin(Date.now()/200)*5);
+                } else if(pls[i].hasCoin){
+                   ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -45 + Math.sin(Date.now()/200)*5, 7, 0, Math.PI*2); ctx.fill();
+                   ctx.strokeStyle = "#fff"; ctx.lineWidth=2; ctx.stroke();
+                }
             }
             ctx.restore();
         }
@@ -230,25 +237,40 @@
             let jO = Math.sin(jT*Math.PI)*50;
             if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
             if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
-            if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playSound("coin"); } if(cur<tasks.length) uQ(); else showF(true);}}
+            if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; 
+                if(pls[cur].hasShield) { hasShield=true; document.getElementById("shield-indicator").style.display="block"; playSound("shield"); }
+                else if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playSound("coin"); } 
+                if(cur<tasks.length) uQ(); else showF(true);
+            }}
+            
+            if(hasShield) {
+                ctx.save(); ctx.beginPath(); ctx.strokeStyle = "#00f7ff"; ctx.lineWidth = 3;
+                ctx.arc(hP.x + pW/2, hP.y - hSize/2 - jO + hOffset, hSize/1.5, 0, Math.PI*2);
+                ctx.stroke(); ctx.globalAlpha = 0.2; ctx.fillStyle = "#00f7ff"; ctx.fill(); ctx.restore();
+            }
+
             if(img.complete) ctx.drawImage(img, hP.x + pW/2 - hSize/2, hP.y - hSize - jO + hOffset, hSize, hSize);
             requestAnimationFrame(u);
         }
 
         function uQ(){ 
-            document.getElementById("q").style.display="block"; 
-            document.getElementById("qt").innerText=tasks[cur].q; 
+            document.getElementById("q").style.display="block"; document.getElementById("qt").innerText=tasks[cur].q; 
             const b=document.getElementById("as"); b.innerHTML=""; 
-            
-            // Копируем варианты ответов и мешаем их тоже для честности
             let ans = tasks[cur].a.map((v, i) => ({v, isCorrect: i === tasks[cur].c}));
             ans.sort(() => Math.random() - 0.5);
-
             ans.forEach((a)=>{ 
                 const btn=document.createElement("button"); btn.className="bt"; btn.innerText=a.v; 
                 btn.onclick=()=>{ 
                     if(a.isCorrect){ playSound("jump"); document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; 
-                    } else { liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); } 
+                    } else { 
+                        if(hasShield) { 
+                            hasShield = false; document.getElementById("shield-indicator").style.display="none"; playSound("fail"); 
+                            // Тряска экрана при потере щита
+                            cvs.style.animation = "shake 0.5s"; setTimeout(()=>cvs.style.animation="", 500);
+                        } else {
+                            liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); 
+                        }
+                    } 
                 }; b.appendChild(btn); 
             }); 
         }
@@ -260,7 +282,9 @@
             document.getElementById("f-score").innerHTML = "<h3>${s.score}: "+coins+"</h3>";
             if(!win) playSound("fail"); else playSound("win");
         }
-        uQ();u();startTimer();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
+        uQ();u();startTimer();<\/script>
+        <style>@keyframes shake { 0% { transform: translate(1px, 1px); } 20% { transform: translate(-3px, 0); } 40% { transform: translate(3px, 2px); } 60% { transform: translate(-3px, 1px); } 80% { transform: translate(3px, 1px); } 100% { transform: translate(0, 0); } }</style>
+        </body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
 
     function draw() { document.getElementById('f-box').innerHTML = getCode(); }
