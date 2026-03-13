@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.3 - Low Angle</title>
+    <title>Genially Builder v10.4 - Compact Style</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -25,16 +25,16 @@
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
     
-    <h2 id="ui-title">Editor v10.3 📏📐</h2>
+    <h2 id="ui-title">Editor v10.4 🤏✨</h2>
     
     <label id="ui-hero-label">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
     
     <label id="ui-size-label" style="color: #ff007f;">Размер человечка:</label>
-    <input type="range" id="h-size" min="50" max="500" value="180" oninput="draw()">
+    <input type="range" id="h-size" min="30" max="400" value="120" oninput="draw()">
 
     <label id="ui-offset-label" style="color: #00f7ff;">Компенсация по Y:</label>
-    <input type="range" id="h-offset" min="0" max="200" value="110" oninput="draw()">
+    <input type="range" id="h-offset" min="0" max="150" value="75" oninput="draw()">
 
     <label id="ui-pcol-label">Цвет платформы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
@@ -61,7 +61,7 @@
     let currentLang = 'ru';
     const uiStrings = {
         ru: {
-            title: "Editor v10.3 📏📐",
+            title: "Editor v10.4 🤏✨",
             hero: "Герой (URL/GIF):",
             size: "Размер человечка:",
             offset: "Компенсация по Y:",
@@ -70,14 +70,14 @@
             time: "Время на игру (сек):",
             win: "Победный текст:",
             btn: "КОПИРОВАТЬ КОД ДЛЯ GENIALLY",
-            alert: "Код v10.3 скопирован!",
+            alert: "Код v10.4 скопирован!",
             restart: "ЗАНОВО",
             score: "МОНЕТ",
             gameOver: "ИГРА ОКОНЧЕНА",
             timeOut: "ВРЕМЯ ВЫШЛО!"
         },
         en: {
-            title: "Editor v10.3 📏📐",
+            title: "Editor v10.4 🤏✨",
             hero: "Hero (URL/GIF):",
             size: "Character Size:",
             offset: "Y Compensation:",
@@ -86,7 +86,7 @@
             time: "Game Time (sec):",
             win: "Victory Text:",
             btn: "COPY CODE FOR GENIALLY",
-            alert: "Code v10.3 copied!",
+            alert: "Code v10.4 copied!",
             restart: "RESTART",
             score: "COINS",
             gameOver: "GAME OVER",
@@ -173,7 +173,7 @@
         const img=new Image();img.src="${hero}";
         const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),tasks=${data};
         const hSize=${hSize}, hOffset=${hOffset}, pCol="${col}";
-        const pW = 85, pH = 40, pDepth = 20; 
+        const pW = 65, pH = 30, pDepth = 15; 
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,winAn=0,jumpCount=0,fallY=0,deadAn=0;
         let coins=0, timeLeft=${gameTime}, timerId;
 
@@ -198,11 +198,10 @@
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}
         window.onresize=rs;rs();
         
-        // --- ИЗМЕНЕННЫЕ НАСТРОЙКИ УГЛА ---
-        const stepX = 95; // Больше расстояние вширь
-        const stepY = 15; // Совсем маленький подъем вверх
+        const stepX = 85; 
+        const stepY = 15; 
         const pls=[];for(let i=0;i<13;i++){
-            pls.push({x:30+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0})
+            pls.push({x:40+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0})
         }
         let hP={x:pls[0].x,y:pls[0].y};
 
@@ -215,7 +214,7 @@
             ctx.fillStyle = frontC; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW, pDepth); ctx.lineTo(pW/2, pH/2 + pDepth); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
             ctx.fillStyle = topC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2, -pH/2); ctx.lineTo(pW, 0); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
             if(pls[i].hasCoin && i > cur){
-                ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -55 + Math.sin(Date.now()/200)*5, 10, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "#ffcc00"; ctx.beginPath(); ctx.arc(pW/2, -45 + Math.sin(Date.now()/200)*5, 7, 0, Math.PI*2); ctx.fill();
                 ctx.strokeStyle = "#fff"; ctx.lineWidth=2; ctx.stroke();
             }
             ctx.restore();
