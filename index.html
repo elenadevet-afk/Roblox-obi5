@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.1 - New Jump Sound</title>
+    <title>Genially Builder v10.1 - Better Game Sounds</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -183,22 +183,28 @@
         function playSound(type) {
             initAudio(); const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
             if(type==="jump"){ 
-                osc.type="triangle"; 
-                osc.frequency.setValueAtTime(150, audioCtx.currentTime); 
-                osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1); 
-                gain.gain.setValueAtTime(0.07, audioCtx.currentTime);
+                osc.type="sine"; 
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.1); 
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
             }
-            if(type==="coin"){ osc.type="sine"; osc.frequency.setValueAtTime(900, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); }
-            if(type==="fail"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(300, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); }
+            if(type==="coin"){ 
+                osc.type="sine"; 
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime); 
+                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.05); 
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            }
+            if(type==="fail"){ osc.type="sawtooth"; osc.frequency.setValueAtTime(200, audioCtx.currentTime); osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.4); gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);}
             if(type==="win"){ 
                 osc.type="triangle"; 
-                const notes = [523.25, 659.25, 783.99, 1046.50];
+                const notes = [523, 659, 783, 1046];
                 notes.forEach((f, i) => { osc.frequency.setValueAtTime(f, audioCtx.currentTime + i * 0.1); });
                 gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
             }
-            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.6);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.7);
         }
 
         function startTimer() { timerId = setInterval(()=>{ if(isWin || isDead) return; timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "${s.timeOut}"); },1000); }
