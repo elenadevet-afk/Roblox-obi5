@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v12.3 - Particle Glow & Soft Sound</title>
+    <title>Genially Builder v12.4 - Physics & Clear Sound</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 400px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -24,7 +24,7 @@
         <div id="tab-ru" class="lang-btn active" onclick="switchLang('ru')">РУССКИЙ</div>
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
-    <h2 id="ui-title">Editor v12.3 🛡️✨</h2>
+    <h2 id="ui-title">Editor v12.4 🏆</h2>
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
     <label style="color: #ff007f;">Размер человечка:</label>
@@ -51,8 +51,8 @@
 <script>
     let currentLang = 'ru';
     const uiStrings = {
-        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v12.3 скопирован!" },
-        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v12.3 copied!" }
+        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v12.4 скопирован!" },
+        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v12.4 copied!" }
     };
 
     function switchLang(lang) {
@@ -127,7 +127,6 @@
         
         function playS(t) {
             initAudio(); const o = window.audioCtx.createOscillator(), g = window.audioCtx.createGain();
-            // ВОЗВРАЩЕНА ЧИСТАЯ ЛОГИКА ЗВУКА ИЗ v12.1
             if(t==="jump"){ 
                 o.type="sine"; o.frequency.setValueAtTime(200, window.audioCtx.currentTime); 
                 o.frequency.linearRampToValueAtTime(40, window.audioCtx.currentTime + 0.12); 
@@ -192,12 +191,39 @@
                 const h = dP(p.x,p.y,i<=cur,i);
                 if(i===cur) currentPlatformHover = h;
             });
+            
+            // ЛОГИКА АНИМАЦИИ ПРЫЖКОВ
             let jO = Math.sin(jT*Math.PI)*50;
-            if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; 
-                if(pls[cur].hasShield) { hasShield=true; document.getElementById("shield-indicator").style.display="block"; playS("shield"); createParticles(hP.x+pW/2, hP.y); }
-                else if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playS("coin"); createParticles(hP.x+pW/2, hP.y); } 
-                if(cur<tasks.length) uQ(); else showF(true, "${winT}");
-            }}
+            
+            // Если ПОБЕДА - прыгаем от радости
+            if(isWin) { 
+                winAn += 0.1; 
+                jO = Math.abs(Math.sin(winAn))*50; 
+            }
+            // Если ПРОИГРЫШ - сначала подпрыгиваем (deadAn), потом падаем (fallY)
+            if(isDead) {
+                if(deadAn < Math.PI) {
+                    deadAn += 0.08;
+                    jO = Math.sin(deadAn) * 60;
+                } else {
+                    fallY += 10;
+                    jO = -fallY;
+                }
+            }
+
+            if(jT<1 && !isDead){ 
+                jT+=0.04; 
+                hP.x=sP.x+(tP.x-sP.x)*jT; 
+                hP.y=sP.y+(tP.y-sP.y)*jT; 
+                if(jT>=1){
+                    jT=1; 
+                    if(pls[cur].hasShield) { hasShield=true; document.getElementById("shield-indicator").style.display="block"; playS("shield"); createParticles(hP.x+pW/2, hP.y); }
+                    else if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playS("coin"); createParticles(hP.x+pW/2, hP.y); } 
+                    if(cur<tasks.length) uQ(); else showF(true, "${winT}");
+                }
+            }
+            
+            if(hasShield) { ctx.save(); ctx.beginPath(); ctx.strokeStyle="#00f7ff"; ctx.lineWidth=3; ctx.arc(hP.x+pW/2, hP.y-hSize/2-jO+hOffset+currentPlatformHover, hSize/1.5, 0, Math.PI*2); ctx.stroke(); ctx.restore(); }
             if(img.complete) ctx.drawImage(img, hP.x+pW/2-hSize/2, hP.y-hSize-jO+hOffset+currentPlatformHover, hSize, hSize);
             drawParticles();
             requestAnimationFrame(u);
@@ -219,7 +245,7 @@
                 }); 
             }, 150);
         }
-        function showF(win, msg){ clearInterval(timerId); isWin=win; if(!win) isDead=true; playS(win?"win":"fail"); document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=msg; document.getElementById("f-score").innerHTML = "<h3>${s.score}: "+coins+"</h3>"; }
+        function showF(win, msg){ clearInterval(timerId); if(win) isWin=true; else isDead=true; playS(win?"win":"fail"); document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=msg; document.getElementById("f-score").innerHTML = "<h3>${s.score}: "+coins+"</h3>"; }
         timerId = setInterval(()=>{ if(!isWin && !isDead) { timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "${s.timeOut}"); } },1000);
         uQ();u();<\/script></body></html>' style='width:100%;height:600px;border:none;'></iframe>`;
     }
