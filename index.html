@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.9 - Deep Pop Edition</title>
+    <title>Genially Builder v12.0 - Perfect Pop</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 400px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -25,7 +25,7 @@
         <div id="tab-ru" class="lang-btn active" onclick="switchLang('ru')">РУССКИЙ</div>
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
-    <h2 id="ui-title">Editor v11.9 🛡️</h2>
+    <h2 id="ui-title">Editor v12.0 🛡️</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -61,8 +61,8 @@
 <script>
     let currentLang = 'ru';
     const uiStrings = {
-        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v11.9 скопирован!" },
-        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v11.9 copied!" }
+        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v12.0 скопирован!" },
+        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v12.0 copied!" }
     };
 
     function switchLang(lang) {
@@ -84,11 +84,11 @@
             const d = document.createElement('div'); d.className = 'card';
             d.innerHTML = `
                 <strong>${i+1}</strong> <input type="text" value="${q.q.replace(/"/g, '&quot;')}" oninput="qs[${i}].q=this.value;draw()">
-                <label class="correct-label">ПРАВИЛЬНЫЙ:</label>
-                <input type="text" value="${q.a[0].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[0]=this.value;draw()">
-                <label>ЛОЖНЫЕ:</label>
-                <input type="text" value="${q.a[1].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[1]=this.value;draw()">
-                <input type="text" value="${q.a[2].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[2]=this.value;draw()">
+                <div style="display:flex;gap:4px">
+                    <input type="text" value="${q.a[0].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[0]=this.value;draw()">
+                    <input type="text" value="${q.a[1].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[1]=this.value;draw()">
+                    <input type="text" value="${q.a[2].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[2]=this.value;draw()">
+                </div>
             `;
             c.appendChild(d);
         });
@@ -138,16 +138,17 @@
         function playS(t) {
             initAudio(); const o = window.audioCtx.createOscillator(), g = window.audioCtx.createGain();
             if(t==="jump"){ 
+                // В ТОЧНОСТИ КАК В 10.6
                 o.type="sine"; 
-                o.frequency.setValueAtTime(150, window.audioCtx.currentTime); 
-                o.frequency.linearRampToValueAtTime(40, window.audioCtx.currentTime + 0.05); 
-                g.gain.setValueAtTime(0.5, window.audioCtx.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.06);
+                o.frequency.setValueAtTime(400, window.audioCtx.currentTime); 
+                o.frequency.exponentialRampToValueAtTime(10, window.audioCtx.currentTime + 0.1); 
+                g.gain.setValueAtTime(0.3, window.audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.1);
             }
-            if(t==="tick"){ o.type="sine"; o.frequency.setValueAtTime(400, window.audioCtx.currentTime); g.gain.setValueAtTime(0.01, window.audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.01); }
-            if(t==="coin"){ o.type="sine"; o.frequency.setValueAtTime(700, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(900, window.audioCtx.currentTime + 0.1); g.gain.setValueAtTime(0.08, window.audioCtx.currentTime); }
-            if(t==="shield"){ o.type="square"; o.frequency.setValueAtTime(400, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(600, window.audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.05, window.audioCtx.currentTime); }
-            if(t==="fail"){ o.type="sawtooth"; o.frequency.setValueAtTime(120, window.audioCtx.currentTime); o.frequency.linearRampToValueAtTime(40, window.audioCtx.currentTime + 0.4); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
+            if(t==="tick"){ o.type="sine"; o.frequency.setValueAtTime(800, window.audioCtx.currentTime); g.gain.setValueAtTime(0.01, window.audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.05); }
+            if(t==="coin"){ o.type="sine"; o.frequency.setValueAtTime(800, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1200, window.audioCtx.currentTime + 0.05); g.gain.setValueAtTime(0.05, window.audioCtx.currentTime); }
+            if(t==="shield"){ o.type="square"; o.frequency.setValueAtTime(600, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1000, window.audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
+            if(t==="fail"){ o.type="sawtooth"; o.frequency.setValueAtTime(200, window.audioCtx.currentTime); o.frequency.linearRampToValueAtTime(50, window.audioCtx.currentTime + 0.4); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
             if(t==="win"){ o.type="triangle"; [523, 659, 783, 1046].forEach((f, i) => o.frequency.setValueAtTime(f, window.audioCtx.currentTime + i * 0.1)); g.gain.setValueAtTime(0.08, window.audioCtx.currentTime); }
             o.connect(g); g.connect(window.audioCtx.destination); o.start(); o.stop(window.audioCtx.currentTime + 0.5);
         }
