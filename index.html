@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.0 - Ultimate Edition</title>
+    <title>Genially Builder v11.1 - Fixed Edition</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 400px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -26,7 +26,7 @@
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
 
-    <h2 id="ui-title">Editor v11.0 🛡️</h2>
+    <h2 id="ui-title">Editor v11.1 🛠️</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -62,40 +62,38 @@
 <script>
     let currentLang = 'ru';
     const uiStrings = {
-        ru: {
-            restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v11.0 скопирован!"
-        },
-        en: {
-            restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v11.0 copied!"
-        }
+        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код скопирован!" },
+        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code copied!" }
     };
 
     function switchLang(lang) {
         currentLang = lang;
-        document.getElementById('tab-ru').classList.toggle('active', lang === 'ru');
-        document.getElementById('tab-en').classList.toggle('active', lang === 'en');
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + lang).classList.add('active');
         draw();
     }
 
     let qs = Array.from({length: 12}, (_, i) => ({
-        q: `Предложение ${i+1}?`,
-        a: ["Верный ответ", "Ложный 1", "Ложный 2"],
+        q: `Ваш вопрос номер ${i+1}?`,
+        a: ["Правильный ответ", "Ложный вариант 1", "Ложный вариант 2"],
         c: 0
     }));
 
     function render() {
-        const c = document.getElementById('q-list'); c.innerHTML = '';
+        const container = document.getElementById('q-list');
+        container.innerHTML = '';
         qs.forEach((q, i) => {
-            const d = document.createElement('div'); d.className = 'card';
+            const d = document.createElement('div');
+            d.className = 'card';
             d.innerHTML = `
-                <strong>${i+1}</strong> <input type="text" value="${q.q}" oninput="qs[${i}].q=this.value;draw()">
+                <strong>${i+1}</strong> <input type="text" value="${q.q.replace(/"/g, '&quot;')}" oninput="qs[${i}].q=this.value;draw()">
                 <label class="correct-label">ПРАВИЛЬНЫЙ:</label>
-                <input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()">
+                <input type="text" value="${q.a[0].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[0]=this.value;draw()">
                 <label>ЛОЖНЫЕ:</label>
-                <input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()">
-                <input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()">
+                <input type="text" value="${q.a[1].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[1]=this.value;draw()">
+                <input type="text" value="${q.a[2].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[2]=this.value;draw()">
             `;
-            c.appendChild(d);
+            container.appendChild(d);
         });
     }
 
@@ -108,7 +106,8 @@
         const gameTime = document.getElementById('g-time').value;
         const winT = document.getElementById('t-win').value;
         const s = uiStrings[currentLang];
-        const data = JSON.stringify(qs).replace(/'/g, "\\'");
+        // Глубокое экранирование для JSON
+        const data = JSON.stringify(qs).replace(/'/g, "\\'").replace(/"/g, '\\"');
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
         body,html{margin:0;padding:0;overflow:hidden;background:transparent;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
@@ -118,7 +117,7 @@
         #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:85%;max-width:500px;text-align:center;display:none;z-index:20}
         .bt{background:rgba(0,0,0,0.8);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:8px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:16px;line-height:1.2;display:block}
         .bt:hover{background:${col};color:#000}
-        #qt{font-size:28px; margin-bottom:20px; color:${tCol}; font-weight:bold; text-shadow: 0 4px 8px #000;}
+        #qt{font-size:26px; margin-bottom:20px; color:${tCol}; font-weight:bold; text-shadow: 0 4px 8px #000;}
         #final{position:absolute; top:75px; left:15px; width:260px; text-align:left; display:none; z-index:30}
         #shield-indicator{display:none; color:#00f7ff; text-shadow: 0 0 10px #00f7ff;}
         </style></head><body>
@@ -132,9 +131,9 @@
         <div id="final"><h2 style="color:${col};" id="f-title"></h2><div id="f-score"></div><button class="bt" onclick="location.reload()">${s.restart}</button></div>
         <canvas id="c"></canvas>
         <script>
-        const img=new Image();img.src="${hero}";
-        const cvs=document.getElementById("c"),ctx=cvs.getContext("2d"),rawTasks=${data};
-        const tasks = [...rawTasks].sort(() => Math.random() - 0.5);
+        const img=new Image(); img.src="${hero}";
+        const cvs=document.getElementById("c"), ctx=cvs.getContext("2d");
+        const tasks = JSON.parse(\`${data}\`).sort(() => Math.random() - 0.5);
         const hSize=${hSize}, hOffset=${hOffset}, pCol="${col}";
         let cur=0,liv=3,jT=1,sP={x:0,y:0},tP={x:0,y:0},isWin=false,isDead=false,coins=0,timeLeft=${gameTime},timerId,hasShield=false,fallY=0,deadAn=0;
         
@@ -142,13 +141,13 @@
             var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
             return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
         }
-        function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}window.onresize=rs;rs();
+        function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight} window.onresize=rs; rs();
 
         const stepX = 85, stepY = 15, pW = 65, pH = 30, pDepth = 15; 
-        const pls=[];for(let i=0;i<(tasks.length+1);i++){
+        const pls=[]; for(let i=0; i<(tasks.length+1); i++){
             pls.push({x:40+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0, hasShield: (i===4 || i===8)})
         }
-        let hP={x:pls[0].x,y:pls[0].y};
+        let hP={x:pls[0].x, y:pls[0].y};
 
         function dP(x,y,active,i){
             ctx.save(); ctx.translate(x,y);
@@ -178,11 +177,12 @@
         }
 
         function uQ(){ 
-            document.getElementById("q").style.display="block"; document.getElementById("qt").textContent=tasks[cur].q; 
+            document.getElementById("q").style.display="block"; 
+            document.getElementById("qt").innerText=tasks[cur].q; 
             const b=document.getElementById("as"); b.innerHTML=""; 
             let ans = tasks[cur].a.map((v, i) => ({v, isCorrect: i === tasks[cur].c})).sort(()=>Math.random()-0.5);
             ans.forEach((a)=>{ 
-                const btn=document.createElement("button"); btn.className="bt"; btn.textContent=a.v; 
+                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=a.v; 
                 btn.onclick=()=>{ 
                     if(a.isCorrect){ document.getElementById("q").style.display="none"; sP={...hP}; cur++; tP={...pls[cur]}; jT=0; } 
                     else { if(hasShield){ hasShield=false; document.getElementById("shield-indicator").style.display="none"; } 
@@ -198,9 +198,13 @@
 
     function draw() { document.getElementById('f-box').innerHTML = getCode(); }
     function copyIt() {
-        const el = document.createElement('textarea'); el.value = getCode();
-        document.body.appendChild(el); el.select(); document.execCommand('copy');
-        document.body.removeChild(el); alert(uiStrings[currentLang].alert);
+        const el = document.createElement('textarea');
+        el.value = getCode();
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        alert(uiStrings[currentLang].alert);
     }
     render(); draw();
 </script>
