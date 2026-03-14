@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v10.6 - Shield Edition</title>
+    <title>Genially Builder v10.7 - Text Fixed</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 380px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -25,7 +25,7 @@
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
     
-    <h2 id="ui-title">Editor v10.6 🛡️</h2>
+    <h2 id="ui-title">Editor v10.7 📝✅</h2>
     
     <label id="ui-hero-label">Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -61,7 +61,7 @@
     let currentLang = 'ru';
     const uiStrings = {
         ru: {
-            title: "Editor v10.6 🛡️",
+            title: "Editor v10.7 📝✅",
             hero: "Герой (URL/GIF):",
             size: "Размер человечка:",
             offset: "Компенсация по Y:",
@@ -70,7 +70,7 @@
             time: "Время на игру (сек):",
             win: "Победный текст:",
             btn: "КОПИРОВАТЬ КОД ДЛЯ GENIALLY",
-            alert: "Код v10.6 скопирован!",
+            alert: "Код v10.7 скопирован!",
             restart: "ЗАНОВО",
             score: "МОНЕТ",
             gameOver: "ИГРА ОКОНЧЕНА",
@@ -78,7 +78,7 @@
             shield: "ЩИТ АКТИВЕН"
         },
         en: {
-            title: "Editor v10.6 🛡️",
+            title: "Editor v10.7 📝✅",
             hero: "Hero (URL/GIF):",
             size: "Character Size:",
             offset: "Y Compensation:",
@@ -87,7 +87,7 @@
             time: "Game Time (sec):",
             win: "Victory Text:",
             btn: "COPY CODE FOR GENIALLY",
-            alert: "Code v10.6 copied!",
+            alert: "Code v10.7 copied!",
             restart: "RESTART",
             score: "COINS",
             gameOver: "GAME OVER",
@@ -114,27 +114,19 @@
     }
 
     let qs = [
-        {q:"Apple?", a:["Яблоко","Груша","Банан"], c:0},
-        {q:"Cat?", a:["Собака","Кот","Лев"], c:1},
-        {q:"Red?", a:["Синий","Красный","Зеленый"], c:1},
-        {q:"One+One?", a:["1","2","3"], c:1},
-        {q:"Sun?", a:["Луна","Звезда","Солнце"], c:2},
-        {q:"Water?", a:["Вода","Огонь","Земля"], c:0},
-        {q:"Big?", a:["Малый","Большой","Средний"], c:1},
-        {q:"Mother?", a:["Папа","Мама","Брат"], c:1},
-        {q:"Green?", a:["Зеленый","Желтый","Серый"], c:0},
-        {q:"Friend?", a:["Враг","Друг","Сосед"], c:1},
-        {q:"Jump?", a:["Бег","Прыжок","Сон"], c:1},
-        {q:"Book?", a:["Книга","Ручка","Лист"], c:0}
+        {q:"Здесь может быть очень длинное предложение для вопроса?", a:["Вариант ответа один","Второй длинный вариант ответа","Коротко"], c:0},
+        {q:"Как дела?", a:["Хорошо","Плохо","Нормально"], c:0}
     ];
 
     function render() {
         const c = document.getElementById('q-list'); c.innerHTML = '';
         qs.forEach((q, i) => {
             const d = document.createElement('div'); d.className = 'card';
-            d.innerHTML = `<strong>${i+1}</strong> <input type="text" value="${q.q}" oninput="qs[${i}].q=this.value;draw()">
-            <div style="display:flex;gap:4px">
-                <input type="text" value="${q.a[0]}" oninput="qs[${i}].a[0]=this.value;draw()"><input type="text" value="${q.a[1]}" oninput="qs[${i}].a[1]=this.value;draw()"><input type="text" value="${q.a[2]}" oninput="qs[${i}].a[2]=this.value;draw()">
+            d.innerHTML = `<strong>${i+1}</strong> <input type="text" value="${q.q.replace(/"/g, '&quot;')}" oninput="qs[${i}].q=this.value;draw()">
+            <div style="display:flex;flex-direction:column;gap:4px">
+                <input type="text" value="${q.a[0].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[0]=this.value;draw()">
+                <input type="text" value="${q.a[1].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[1]=this.value;draw()">
+                <input type="text" value="${q.a[2].replace(/"/g, '&quot;')}" oninput="qs[${i}].a[2]=this.value;draw()">
             </div>`;
             c.appendChild(d);
         });
@@ -149,19 +141,20 @@
         const gameTime = document.getElementById('g-time').value;
         const winT = document.getElementById('t-win').value;
         const s = uiStrings[currentLang];
-        const data = JSON.stringify(qs);
+        // Используем специальную обработку JSON, чтобы избежать проблем с кавычками в текстах
+        const data = JSON.stringify(qs).replace(/'/g, "\\'");
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
         body,html{margin:0;padding:0;overflow:hidden;background:transparent;height:100vh;width:100vw;font-family:sans-serif;color:#fff}
         canvas{display:block}
         #ui{position:absolute;top:15px;left:15px;z-index:10;display:flex;gap:8px}
         .b{background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold;min-width:60px;text-align:center}
-        #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:340px;text-align:center;display:none;z-index:20}
+        #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:80%;max-width:500px;text-align:center;display:none;z-index:20}
         #final{position:absolute; top:75px; left:15px; width:250px; text-align:left; display:none; z-index:30; opacity:0; animation: fadeIn 1s forwards;}
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .bt{background:rgba(0,0,0,0.7);border:1px solid ${col};color:#fff;width:100%;padding:14px;margin:10px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:15px}
+        .bt{background:rgba(0,0,0,0.8);border:2px solid ${col};color:#fff;width:100%;padding:12px;margin:8px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:16px;line-height:1.2;display:block}
         .bt:hover{background:${col};color:#000}
-        #qt{font-size:32px; margin-bottom:20px; color:${txtCol}; font-weight:bold; text-shadow: 0 4px 0 #000, 0 8px 10px rgba(0,0,0,0.5);}
+        #qt{font-size:28px; margin-bottom:20px; color:${txtCol}; font-weight:bold; text-shadow: 0 4px 4px #000;}
         #shield-indicator{display:none; color:#00f7ff; text-shadow: 0 0 10px #00f7ff;}
         </style></head><body>
         <div id="ui">
@@ -206,7 +199,7 @@
         window.onresize=rs;rs();
         
         const stepX = 85, stepY = 15; 
-        const pls=[];for(let i=0;i<13;i++){
+        const pls=[];for(let i=0;i<(tasks.length+1);i++){
             pls.push({x:40+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0, hasShield: (i===4 || i===8)})
         }
         let hP={x:pls[0].x,y:pls[0].y};
@@ -220,7 +213,7 @@
             ctx.fillStyle = frontC; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW, pDepth); ctx.lineTo(pW/2, pH/2 + pDepth); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
             ctx.fillStyle = topC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2, -pH/2); ctx.lineTo(pW, 0); ctx.lineTo(pW/2, pH/2); ctx.closePath(); ctx.fill();
             
-            if(i > cur){
+            if(i > cur && i < pls.length){
                 if(pls[i].hasShield){
                    ctx.fillStyle = "#00f7ff"; ctx.font = "20px serif"; ctx.fillText("🛡️", pW/2 - 10, -40 + Math.sin(Date.now()/200)*5);
                 } else if(pls[i].hasCoin){
@@ -238,8 +231,8 @@
             if(isWin && jumpCount < 3) { winAn += 0.15; jO = Math.abs(Math.sin(winAn))*40; if(winAn >= Math.PI) { winAn -= Math.PI; jumpCount++; } }
             if(isDead) { deadAn += 0.08; if(deadAn < Math.PI) jO = Math.sin(deadAn) * 60; else { fallY += 10; jO = -fallY; } }
             if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; 
-                if(pls[cur].hasShield) { hasShield=true; document.getElementById("shield-indicator").style.display="block"; playSound("shield"); }
-                else if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playSound("coin"); } 
+                if(pls[cur] && pls[cur].hasShield) { hasShield=true; document.getElementById("shield-indicator").style.display="block"; playSound("shield"); }
+                else if(pls[cur] && pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playSound("coin"); } 
                 if(cur<tasks.length) uQ(); else showF(true);
             }}
             
@@ -254,18 +247,18 @@
         }
 
         function uQ(){ 
-            document.getElementById("q").style.display="block"; document.getElementById("qt").innerText=tasks[cur].q; 
+            document.getElementById("q").style.display="block"; 
+            document.getElementById("qt").textContent=tasks[cur].q; 
             const b=document.getElementById("as"); b.innerHTML=""; 
             let ans = tasks[cur].a.map((v, i) => ({v, isCorrect: i === tasks[cur].c}));
             ans.sort(() => Math.random() - 0.5);
             ans.forEach((a)=>{ 
-                const btn=document.createElement("button"); btn.className="bt"; btn.innerText=a.v; 
+                const btn=document.createElement("button"); btn.className="bt"; btn.textContent=a.v; 
                 btn.onclick=()=>{ 
                     if(a.isCorrect){ playSound("jump"); document.getElementById("q").style.display="none"; sP={x:hP.x,y:hP.y}; cur++; tP={x:pls[cur].x,y:pls[cur].y}; jT=0; 
                     } else { 
                         if(hasShield) { 
                             hasShield = false; document.getElementById("shield-indicator").style.display="none"; playSound("fail"); 
-                            // Тряска экрана при потере щита
                             cvs.style.animation = "shake 0.5s"; setTimeout(()=>cvs.style.animation="", 500);
                         } else {
                             liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false); 
