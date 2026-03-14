@@ -2,14 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v12.2 - Ultimate Juicy</title>
+    <title>Genially Builder v12.3 - Particle Glow & Soft Sound</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 400px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
         .card { background: #252525; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #bc13fe; }
         label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; display: block; margin-top: 10px; }
         input { width: 100%; padding: 8px; margin: 5px 0; background: #000; color: #00f7ff; border: 1px solid #333; border-radius: 6px; box-sizing: border-box; }
-        .correct-label { color: #39ff14; font-size: 10px; margin-top: 5px; display: block; }
         #view { flex-grow: 1; padding: 20px; background: #050505; display: flex; flex-direction: column; }
         .win-view { flex-grow: 1; border: 2px solid #333; border-radius: 15px; overflow: hidden; background: #000; position: relative; }
         .btn-copy { background: #bc13fe; color: white; padding: 18px; width: 100%; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 20px;}
@@ -25,7 +24,7 @@
         <div id="tab-ru" class="lang-btn active" onclick="switchLang('ru')">РУССКИЙ</div>
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
-    <h2 id="ui-title">Editor v12.2 🛡️✨</h2>
+    <h2 id="ui-title">Editor v12.3 🛡️✨</h2>
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
     <label style="color: #ff007f;">Размер человечка:</label>
@@ -52,8 +51,8 @@
 <script>
     let currentLang = 'ru';
     const uiStrings = {
-        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v12.2 скопирован!" },
-        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v12.2 copied!" }
+        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v12.3 скопирован!" },
+        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v12.3 copied!" }
     };
 
     function switchLang(lang) {
@@ -101,14 +100,13 @@
         canvas{display:block}
         #ui{position:absolute;top:15px;left:15px;z-index:10;display:flex;gap:8px}
         .b{background:rgba(0,0,0,0.5);backdrop-filter:blur(5px);padding:8px 15px;border-radius:12px;border:1px solid ${col};font-size:13px;font-weight:bold;min-width:60px;text-align:center}
-        #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:85%;max-width:500px;text-align:center;display:none;z-index:20; opacity:0; animation: fadeQIn 0.5s forwards; animation-delay: 0.1s;}
-        @keyframes fadeQIn { from{opacity:0; transform:translate(-50%, -60%);} to{opacity:1; transform:translate(-50%, -50%);} }
+        #q{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:85%;max-width:500px;text-align:center;display:none;z-index:20; opacity:0; animation: fadeQIn 0.5s forwards;}
+        @keyframes fadeQIn { from{opacity:0; transform:translate(-50%, -55%);} to{opacity:1; transform:translate(-50%, -50%);} }
         .bt{background:rgba(0,0,0,0.8);border:2px solid ${col};color:#fff;width:100%;padding:14px;margin:8px 0;border-radius:15px;cursor:pointer;font-weight:bold;transition:0.3s;font-size:16px;line-height:1.2;display:block}
         .bt:hover{background:${col};color:#000}
         #qt{font-size:28px; margin-bottom:20px; color:${tCol}; font-weight:bold; text-shadow: 0 4px 8px #000;}
         #final{position:absolute; top:75px; left:15px; width:260px; text-align:left; display:none; z-index:30; animation: fadeIn 0.8s forwards;}
         @keyframes fadeIn { from{opacity:0; transform:translateY(-20px);} to{opacity:1; transform:translateY(0);} }
-        @keyframes shake { 0%{transform:translate(2px,2px);} 20%{transform:translate(-2px,0);} 40%{transform:translate(2px,2px);} 60%{transform:translate(-2px,1px);} 80%{transform:translate(2px,1px);} 100%{transform:translate(0,0);} }
         #shield-indicator{display:none; color:#00f7ff; text-shadow: 0 0 10px #00f7ff;}
         </style></head><body>
         <div id="ui">
@@ -129,12 +127,19 @@
         
         function playS(t) {
             initAudio(); const o = window.audioCtx.createOscillator(), g = window.audioCtx.createGain();
-            if(t==="jump"){ o.type="sine"; o.frequency.setValueAtTime(400, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(10, window.audioCtx.currentTime + 0.1); g.gain.setValueAtTime(0.3, window.audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.1); }
-            if(t==="tick"){ o.type="sine"; o.frequency.setValueAtTime(800, window.audioCtx.currentTime); g.gain.setValueAtTime(0.01, window.audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.05); }
-            if(t==="coin"){ o.type="sine"; o.frequency.setValueAtTime(800, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1200, window.audioCtx.currentTime + 0.05); g.gain.setValueAtTime(0.05, window.audioCtx.currentTime); }
-            if(t==="shield"){ o.type="square"; o.frequency.setValueAtTime(600, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1000, window.audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
-            if(t==="fail"){ o.type="sawtooth"; o.frequency.setValueAtTime(200, window.audioCtx.currentTime); o.frequency.linearRampToValueAtTime(50, window.audioCtx.currentTime + 0.4); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
-            if(t==="win"){ o.type="triangle"; [523, 659, 783, 1046].forEach((f, i) => o.frequency.setValueAtTime(f, window.audioCtx.currentTime + i * 0.1)); g.gain.setValueAtTime(0.08, window.audioCtx.currentTime); }
+            // ВОЗВРАЩЕНА ЧИСТАЯ ЛОГИКА ЗВУКА ИЗ v12.1
+            if(t==="jump"){ 
+                o.type="sine"; o.frequency.setValueAtTime(200, window.audioCtx.currentTime); 
+                o.frequency.linearRampToValueAtTime(40, window.audioCtx.currentTime + 0.12); 
+                g.gain.setValueAtTime(0, window.audioCtx.currentTime);
+                g.gain.linearRampToValueAtTime(0.2, window.audioCtx.currentTime + 0.01);
+                g.gain.linearRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.12);
+            }
+            if(t==="tick"){ o.type="sine"; o.frequency.setValueAtTime(200, window.audioCtx.currentTime); g.gain.setValueAtTime(0.01, window.audioCtx.currentTime); g.gain.linearRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.02); }
+            if(t==="coin"){ o.type="sine"; o.frequency.setValueAtTime(700, window.audioCtx.currentTime); o.frequency.linearRampToValueAtTime(900, window.audioCtx.currentTime + 0.1); g.gain.setValueAtTime(0.04, window.audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, window.audioCtx.currentTime + 0.1);}
+            if(t==="shield"){ o.type="triangle"; o.frequency.setValueAtTime(400, window.audioCtx.currentTime); o.frequency.linearRampToValueAtTime(600, window.audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.05, window.audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, window.audioCtx.currentTime + 0.2);}
+            if(t==="fail"){ o.type="sawtooth"; o.frequency.setValueAtTime(150, window.audioCtx.currentTime); o.frequency.linearRampToValueAtTime(40, window.audioCtx.currentTime + 0.3); g.gain.setValueAtTime(0.05, window.audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, window.audioCtx.currentTime + 0.3);}
+            if(t==="win"){ o.type="sine"; [523, 659, 783, 1046].forEach((f, i) => o.frequency.setValueAtTime(f, window.audioCtx.currentTime + i * 0.1)); g.gain.setValueAtTime(0.05, window.audioCtx.currentTime); g.gain.linearRampToValueAtTime(0, window.audioCtx.currentTime + 0.5); }
             o.connect(g); g.connect(window.audioCtx.destination); o.start(); o.stop(window.audioCtx.currentTime + 0.5);
         }
 
@@ -144,23 +149,16 @@
         
         function createParticles(x, y) {
             for (let i = 0; i < 15; i++) {
-                particles.push({
-                    x: x, y: y,
-                    vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6 - 3,
-                    life: 40 + Math.random() * 20,
-                    size: 8 + Math.random() * 8
-                });
+                particles.push({ x: x, y: y, vx: (Math.random()-0.5)*6, vy: (Math.random()-0.5)*6-2, life: 50, size: 10 + Math.random()*10 });
             }
         }
         function drawParticles() {
             particles.forEach((p, i) => {
-                p.x += p.vx; p.y += p.vy; p.vy += 0.1; // Гравитация
-                p.life--;
-                p.size *= 0.96; // Уменьшение
-                ctx.fillStyle = \`rgba(255, 215, 0, \${p.life / 60})\`; // Золотой
+                p.x += p.vx; p.y += p.vy; p.vy += 0.1; p.life--; p.size *= 0.96;
+                ctx.fillStyle = \`rgba(255, 230, 0, \${p.life/50})\`;
                 ctx.font = \`\${p.size}px Arial\`;
                 ctx.fillText("✨", p.x, p.y);
-                if (p.life <= 0) particles.splice(i, 1);
+                if(p.life <= 0) particles.splice(i, 1);
             });
         }
 
@@ -181,7 +179,7 @@
             ctx.fillStyle=sideC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,pDepth); ctx.lineTo(pW/2,pH/2+pDepth); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=frontC; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW,pDepth); ctx.lineTo(pW/2,pH/2+pDepth); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=topC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(pW/2,-pH/2); ctx.lineTo(pW,0); ctx.lineTo(pW/2,pH/2); ctx.fill();
-            if(i>cur && i<pls.length){
+            if(i>cur){
                 if(pls[i].hasShield){ ctx.font="16px Arial"; ctx.fillText("🛡️",pW/2-10,-40+Math.sin(Date.now()/200)*5); }
                 else if(pls[i].hasCoin){ ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(pW/2,-45+Math.sin(Date.now()/200)*5,7,0,Math.PI*2); ctx.fill(); }
             } ctx.restore();
@@ -195,35 +193,31 @@
                 if(i===cur) currentPlatformHover = h;
             });
             let jO = Math.sin(jT*Math.PI)*50;
-            if(isWin && jumpCount < 3) { winAn += 0.12; jO = Math.abs(Math.sin(winAn))*50; if(winAn >= Math.PI){ winAn-=Math.PI; jumpCount++; } }
-            if(isDead && deadAn >= Math.PI) { fallY += 10; jO = -fallY; } else if (isDead) { deadAn += 0.08; jO = Math.sin(deadAn) * 60; }
             if(jT<1 && !isDead){ jT+=0.04; hP.x=sP.x+(tP.x-sP.x)*jT; hP.y=sP.y+(tP.y-sP.y)*jT; if(jT>=1){jT=1; 
-                if(pls[cur].hasShield) { hasShield=true; document.getElementById("shield-indicator").style.display="block"; playS("shield"); createParticles(hP.x + pW/2, hP.y); }
-                else if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playS("coin"); createParticles(hP.x + pW/2, hP.y); } 
+                if(pls[cur].hasShield) { hasShield=true; document.getElementById("shield-indicator").style.display="block"; playS("shield"); createParticles(hP.x+pW/2, hP.y); }
+                else if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playS("coin"); createParticles(hP.x+pW/2, hP.y); } 
                 if(cur<tasks.length) uQ(); else showF(true, "${winT}");
             }}
-            if(hasShield) { ctx.save(); ctx.beginPath(); ctx.strokeStyle="#00f7ff"; ctx.lineWidth=3; ctx.arc(hP.x+pW/2, hP.y-hSize/2-jO+hOffset+currentPlatformHover, hSize/1.5, 0, Math.PI*2); ctx.stroke(); ctx.restore(); }
             if(img.complete) ctx.drawImage(img, hP.x+pW/2-hSize/2, hP.y-hSize-jO+hOffset+currentPlatformHover, hSize, hSize);
             drawParticles();
             requestAnimationFrame(u);
         }
         function uQ(){ 
-            document.getElementById("q").style.display="none"; // Скрываем старый
-            setTimeout(() => { // Плавное появление нового
+            document.getElementById("q").style.display="none";
+            setTimeout(() => {
                 document.getElementById("q").style.display="block"; 
                 document.getElementById("qt").innerText=tasks[cur].q; 
                 const b=document.getElementById("as"); b.innerHTML=""; 
-                let ans = tasks[cur].a.map((v, i) => ({v, isCorrect: i === tasks[cur].c})).sort(()=>Math.random()-0.5);
-                ans.forEach((a)=>{ 
+                tasks[cur].a.map((v, i) => ({v, isCorrect: i === tasks[cur].c})).sort(()=>Math.random()-0.5).forEach((a)=>{ 
                     const btn=document.createElement("button"); btn.className="bt"; btn.innerText=a.v; 
                     btn.onmouseenter=()=>playS("tick");
                     btn.onclick=()=>{ 
                         if(a.isCorrect){ playS("jump"); document.getElementById("q").style.display="none"; sP={...hP}; cur++; tP={...pls[cur]}; jT=0; } 
-                        else { if(hasShield){ hasShield=false; document.getElementById("shield-indicator").style.display="none"; playS("fail"); cvs.style.animation="shake 0.5s"; setTimeout(()=>cvs.style.animation="",500); } 
+                        else { if(hasShield){ hasShield=false; document.getElementById("shield-indicator").style.display="none"; playS("fail"); } 
                         else { playS("fail"); liv--; document.getElementById("hp").innerText="❤️ ".repeat(Math.max(0,liv)); if(liv<=0) showF(false, "${s.gameOver}"); } }
                     }; b.appendChild(btn); 
                 }); 
-            }, 100);
+            }, 150);
         }
         function showF(win, msg){ clearInterval(timerId); isWin=win; if(!win) isDead=true; playS(win?"win":"fail"); document.getElementById("q").style.display="none"; document.getElementById("final").style.display="block"; document.getElementById("f-title").innerText=msg; document.getElementById("f-score").innerHTML = "<h3>${s.score}: "+coins+"</h3>"; }
         timerId = setInterval(()=>{ if(!isWin && !isDead) { timeLeft--; document.getElementById("timer").innerText = "⏳ "+timeLeft; if(timeLeft<=0) showF(false, "${s.timeOut}"); } },1000);
