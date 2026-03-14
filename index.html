@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.6 - Bubble Pop Edition</title>
+    <title>Genially Builder v11.8 - Juicy Edition</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 400px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -25,32 +25,22 @@
         <div id="tab-ru" class="lang-btn active" onclick="switchLang('ru')">РУССКИЙ</div>
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
-
-    <h2 id="ui-title">Editor v11.6 🛡️</h2>
-    
+    <h2 id="ui-title">Editor v11.8 🛡️</h2>
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
-    
     <label style="color: #ff007f;">Размер человечка:</label>
     <input type="range" id="h-size" min="30" max="400" value="120" oninput="draw()">
-
     <label style="color: #00f7ff;">Компенсация по Y:</label>
     <input type="range" id="h-offset" min="0" max="150" value="75" oninput="draw()">
-
     <label>Цвет платформы:</label>
     <input type="color" id="h-col" value="#bc13fe" oninput="draw()">
-
     <label style="color: #ffea00;">Цвет текста вопроса:</label>
     <input type="color" id="t-col" value="#ffffff" oninput="draw()">
-
     <label>Время на игру (сек):</label>
     <input type="number" id="g-time" value="60" oninput="draw()">
-
     <label>Текст при победе:</label>
     <input type="text" id="t-win" value="МИССИЯ ВЫПОЛНЕНА!" oninput="draw()">
-
     <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
-    
     <div id="q-list"></div>
     <button id="ui-btn-copy" class="btn-copy" onclick="copyIt()">КОПИРОВАТЬ КОД ДЛЯ GENIALLY</button>
 </div>
@@ -62,8 +52,8 @@
 <script>
     let currentLang = 'ru';
     const uiStrings = {
-        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v11.6 скопирован!" },
-        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v11.6 copied!" }
+        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v11.8 скопирован!" },
+        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v11.8 copied!" }
     };
 
     function switchLang(lang) {
@@ -104,7 +94,6 @@
         const gameTime = document.getElementById('g-time').value;
         const winT = document.getElementById('t-win').value;
         const s = uiStrings[currentLang];
-        
         const dataPayload = btoa(unescape(encodeURIComponent(JSON.stringify(qs))));
 
         return `<iframe srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
@@ -138,13 +127,8 @@
         function initAudio() { if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (window.audioCtx.state === "suspended") window.audioCtx.resume(); }
         function playS(t) {
             initAudio(); const o = window.audioCtx.createOscillator(), g = window.audioCtx.createGain();
-            if(t==="jump"){ 
-                o.type="sine"; 
-                o.frequency.setValueAtTime(150, window.audioCtx.currentTime); 
-                o.frequency.exponentialRampToValueAtTime(600, window.audioCtx.currentTime + 0.05); 
-                g.gain.setValueAtTime(0.3, window.audioCtx.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.1);
-            }
+            if(t==="jump"){ o.type="sine"; o.frequency.setValueAtTime(300, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(50, window.audioCtx.currentTime + 0.08); g.gain.setValueAtTime(0.4, window.audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.08); }
+            if(t==="tick"){ o.type="sine"; o.frequency.setValueAtTime(1200, window.audioCtx.currentTime); g.gain.setValueAtTime(0.02, window.audioCtx.currentTime); g.gain.exponentialRampToValueAtTime(0.001, window.audioCtx.currentTime + 0.02); }
             if(t==="coin"){ o.type="sine"; o.frequency.setValueAtTime(800, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1200, window.audioCtx.currentTime + 0.1); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
             if(t==="shield"){ o.type="square"; o.frequency.setValueAtTime(600, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1000, window.audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
             if(t==="fail"){ o.type="sawtooth"; o.frequency.setValueAtTime(200, window.audioCtx.currentTime); o.frequency.linearRampToValueAtTime(50, window.audioCtx.currentTime + 0.4); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
@@ -162,12 +146,13 @@
         function rs(){cvs.width=window.innerWidth;cvs.height=window.innerHeight}window.onresize=rs;rs();
         const stepX = 85, stepY = 15, pW = 65, pH = 30, pDepth = 15; 
         const pls=[];for(let i=0;i<(tasks.length+1);i++){
-            pls.push({x:40+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0, hasShield: (i===4 || i===8)})
+            pls.push({x:40+(i*stepX), y:cvs.height-180-(i*stepY), hasCoin: i>0, hasShield: (i===4 || i===8), seed: Math.random()*100})
         }
         let hP={x:pls[0].x,y:pls[0].y};
         
         function dP(x,y,active,i){
-            ctx.save(); ctx.translate(x,y);
+            const hoverY = Math.sin(Date.now()/500 + pls[i].seed)*5;
+            ctx.save(); ctx.translate(x,y + hoverY);
             const topC = active?pCol:"rgba(80,80,80,0.3)", sideC = active?shadeColor(pCol,-0.3):"rgba(50,50,50,0.3)", frontC = active?shadeColor(pCol,-0.5):"rgba(30,30,30,0.3)";
             ctx.fillStyle=sideC; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,pDepth); ctx.lineTo(pW/2,pH/2+pDepth); ctx.lineTo(pW/2,pH/2); ctx.fill();
             ctx.fillStyle=frontC; ctx.beginPath(); ctx.moveTo(pW,0); ctx.lineTo(pW,pDepth); ctx.lineTo(pW/2,pH/2+pDepth); ctx.lineTo(pW/2,pH/2); ctx.fill();
@@ -176,10 +161,16 @@
                 if(pls[i].hasShield){ ctx.font="16px Arial"; ctx.fillText("🛡️",pW/2-10,-40+Math.sin(Date.now()/200)*5); }
                 else if(pls[i].hasCoin){ ctx.fillStyle="#ffcc00"; ctx.beginPath(); ctx.arc(pW/2,-45+Math.sin(Date.now()/200)*5,7,0,Math.PI*2); ctx.fill(); }
             } ctx.restore();
+            return hoverY;
         }
+
         function u(){
             ctx.clearRect(0,0,cvs.width,cvs.height);
-            pls.forEach((p,i)=>dP(p.x,p.y,i<=cur,i));
+            let currentPlatformHover = 0;
+            pls.forEach((p,i)=>{
+                const h = dP(p.x,p.y,i<=cur,i);
+                if(i===cur) currentPlatformHover = h;
+            });
             let jO = Math.sin(jT*Math.PI)*50;
             if(isWin && jumpCount < 3) { winAn += 0.12; jO = Math.abs(Math.sin(winAn))*50; if(winAn >= Math.PI){ winAn-=Math.PI; jumpCount++; } }
             if(isDead && deadAn >= Math.PI) { fallY += 10; jO = -fallY; } else if (isDead) { deadAn += 0.08; jO = Math.sin(deadAn) * 60; }
@@ -188,8 +179,8 @@
                 else if(pls[cur].hasCoin) { coins+=10; document.getElementById("coins").innerText=coins; playS("coin"); } 
                 if(cur<tasks.length) uQ(); else showF(true, "${winT}");
             }}
-            if(hasShield) { ctx.save(); ctx.beginPath(); ctx.strokeStyle="#00f7ff"; ctx.lineWidth=3; ctx.arc(hP.x+pW/2, hP.y-hSize/2-jO+hOffset, hSize/1.5, 0, Math.PI*2); ctx.stroke(); ctx.restore(); }
-            if(img.complete) ctx.drawImage(img, hP.x+pW/2-hSize/2, hP.y-hSize-jO+hOffset, hSize, hSize);
+            if(hasShield) { ctx.save(); ctx.beginPath(); ctx.strokeStyle="#00f7ff"; ctx.lineWidth=3; ctx.arc(hP.x+pW/2, hP.y-hSize/2-jO+hOffset+currentPlatformHover, hSize/1.5, 0, Math.PI*2); ctx.stroke(); ctx.restore(); }
+            if(img.complete) ctx.drawImage(img, hP.x+pW/2-hSize/2, hP.y-hSize-jO+hOffset+currentPlatformHover, hSize, hSize);
             requestAnimationFrame(u);
         }
         function uQ(){ 
@@ -199,6 +190,7 @@
             let ans = tasks[cur].a.map((v, i) => ({v, isCorrect: i === tasks[cur].c})).sort(()=>Math.random()-0.5);
             ans.forEach((a)=>{ 
                 const btn=document.createElement("button"); btn.className="bt"; btn.innerText=a.v; 
+                btn.onmouseenter=()=>playS("tick");
                 btn.onclick=()=>{ 
                     if(a.isCorrect){ playS("jump"); document.getElementById("q").style.display="none"; sP={...hP}; cur++; tP={...pls[cur]}; jT=0; } 
                     else { if(hasShield){ hasShield=false; document.getElementById("shield-indicator").style.display="none"; playS("fail"); cvs.style.animation="shake 0.5s"; setTimeout(()=>cvs.style.animation="",500); } 
