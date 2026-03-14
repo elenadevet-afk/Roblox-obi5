@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Genially Builder v11.5 - Full Effects & Anti-Bug</title>
+    <title>Genially Builder v11.6 - Bubble Pop Edition</title>
     <style>
         body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #0f0f0f; color: white; }
         #panel { width: 400px; background: #1a1a1a; padding: 20px; overflow-y: auto; border-right: 2px solid #bc13fe; box-shadow: 5px 0 15px rgba(0,0,0,0.5); }
@@ -26,7 +26,7 @@
         <div id="tab-en" class="lang-btn" onclick="switchLang('en')">ENGLISH</div>
     </div>
 
-    <h2 id="ui-title">Editor v11.5 🛡️</h2>
+    <h2 id="ui-title">Editor v11.6 🛡️</h2>
     
     <label>Герой (URL/GIF):</label>
     <input type="text" id="h-url" value="https://i.giphy.com/media/l41lTfO7KqT9B0X3W/giphy.gif" oninput="draw()">
@@ -62,8 +62,8 @@
 <script>
     let currentLang = 'ru';
     const uiStrings = {
-        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v11.5 скопирован!" },
-        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v11.5 copied!" }
+        ru: { restart: "ЗАНОВО", score: "МОНЕТ", gameOver: "ИГРА ОКОНЧЕНА", timeOut: "ВРЕМЯ ВЫШЛО!", shield: "ЩИТ АКТИВЕН", alert: "Код v11.6 скопирован!" },
+        en: { restart: "RESTART", score: "COINS", gameOver: "GAME OVER", timeOut: "TIME IS UP!", shield: "SHIELD ACTIVE", alert: "Code v11.6 copied!" }
     };
 
     function switchLang(lang) {
@@ -138,7 +138,13 @@
         function initAudio() { if (!window.audioCtx) window.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (window.audioCtx.state === "suspended") window.audioCtx.resume(); }
         function playS(t) {
             initAudio(); const o = window.audioCtx.createOscillator(), g = window.audioCtx.createGain();
-            if(t==="jump"){ o.type="sine"; o.frequency.setValueAtTime(400, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(10, window.audioCtx.currentTime + 0.1); g.gain.setValueAtTime(0.2, window.audioCtx.currentTime); }
+            if(t==="jump"){ 
+                o.type="sine"; 
+                o.frequency.setValueAtTime(150, window.audioCtx.currentTime); 
+                o.frequency.exponentialRampToValueAtTime(600, window.audioCtx.currentTime + 0.05); 
+                g.gain.setValueAtTime(0.3, window.audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, window.audioCtx.currentTime + 0.1);
+            }
             if(t==="coin"){ o.type="sine"; o.frequency.setValueAtTime(800, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1200, window.audioCtx.currentTime + 0.1); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
             if(t==="shield"){ o.type="square"; o.frequency.setValueAtTime(600, window.audioCtx.currentTime); o.frequency.exponentialRampToValueAtTime(1000, window.audioCtx.currentTime + 0.2); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
             if(t==="fail"){ o.type="sawtooth"; o.frequency.setValueAtTime(200, window.audioCtx.currentTime); o.frequency.linearRampToValueAtTime(50, window.audioCtx.currentTime + 0.4); g.gain.setValueAtTime(0.1, window.audioCtx.currentTime); }
